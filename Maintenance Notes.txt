@@ -1,0 +1,4 @@
+﻿To gain the ability to move items around in the XAML GUI interface, look for this line:
+	<Setter Property="Visibility" Value="Collapsed"/>
+and set Value="Visible"
+
