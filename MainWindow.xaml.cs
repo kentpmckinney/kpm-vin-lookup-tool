@@ -11,6 +11,7 @@ namespace VehicleInformationLookupTool
     using System.Data;
     using System.Net;
     using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows;
 
     /// <summary>
@@ -53,7 +54,7 @@ namespace VehicleInformationLookupTool
 
             // Increase the maximum number of HTTP connections (the default is 2)
             ServicePointManager.DefaultConnectionLimit = 4;
-
+            
             this.InitializeComponent();
         }
 
