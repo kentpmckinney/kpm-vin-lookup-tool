@@ -421,6 +421,7 @@ namespace VehicleInformationLookupTool
             page4Cancel.Content = "Exit";
 
             TaskScheduler scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            
             List<Task> tasks = new List<Task>();
             foreach (string vinNumber in vinList)
             {
