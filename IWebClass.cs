@@ -19,7 +19,7 @@ namespace VehicleInformationLookupTool
         /// </summary>
         /// <param name="uri"> The fully-qualified location of the web service </param>
         /// <returns> A boolean that if true means the web service is working properly </returns>
-        bool NHTSAServiceIsWorking(string uri);
+        bool NhtsaServiceIsWorking(string uri);
 
         /// <summary>
         /// Gets a list of column headers for vin data
@@ -35,6 +35,8 @@ namespace VehicleInformationLookupTool
         /// <param name="uri"> The fully-qualified location of the web service </param>
         /// <param name="vin"> The vehicle's VIN number </param>
         /// <param name="xpath"> Specifies what nodes to retrieve from the XML response </param>
+        /// <param name="autoCorrect"> Specifies whether to auto-correct a VIN number </param>
+        /// <param name="discardInvalid"> Specifies whether to discard data rows with invalid VIN numbers </param>
         /// <returns> A string list with the column values for the specified vin number </returns>
         List<string> GetVinDataRow(string uri, string vin, string xpath, bool autoCorrect, bool discardInvalid);
 

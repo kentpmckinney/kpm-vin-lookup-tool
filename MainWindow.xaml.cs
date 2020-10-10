@@ -11,7 +11,6 @@ namespace VehicleInformationLookupTool
     using System.Data;
     using System.Net;
     using System.Threading;
-    using System.Threading.Tasks;
     using System.Windows;
 
     /// <summary>
@@ -22,27 +21,27 @@ namespace VehicleInformationLookupTool
         /// <summary>
         /// Instance of ExcelClass which encapsulates Excel functionality
         /// </summary>
-        private ExcelClass excel = new ExcelClass();
+        private ExcelClass _excel = new ExcelClass();
 
         /// <summary>
-        /// Instance of WebClass which encapsulates Internet and web access
+        /// Instance of WebClass which encapsulates Internet and _web access
         /// </summary>
-        private WebClass web = new WebClass();
+        private readonly WebClass _web = new WebClass();
 
         /// <summary>
         /// DataTable which stores downloaded vin data
         /// </summary>
-        private DataTable vinData = new DataTable();
+        private DataTable _vinData = new DataTable();
 
         /// <summary>
         /// CancellationSource which allows running tasks to be cancelled
         /// </summary>
-        private CancellationTokenSource downloadCancellationSource = new CancellationTokenSource();
+        private CancellationTokenSource _downloadCancellationSource = new CancellationTokenSource();
 
         /// <summary>
         /// Tasks which are provided this CancellationToken are cancellable by the CancellationSource
         /// </summary>
-        private CancellationToken downloadCancellationToken;
+        private CancellationToken _downloadCancellationToken;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class
@@ -50,11 +49,13 @@ namespace VehicleInformationLookupTool
         public MainWindow()
         {
             // Data initialization for MainWindow
-            this.downloadCancellationToken = this.downloadCancellationSource.Token;
+            this._downloadCancellationToken = this._downloadCancellationSource.Token;
 
             // Increase the maximum number of HTTP connections (the default is 2)
             ServicePointManager.DefaultConnectionLimit = 4;
             ServicePointManager.Expect100Continue = true;
+
+            // Enable all commonly used HTTPS protocols
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
 
             this.InitializeComponent();
@@ -65,25 +66,24 @@ namespace VehicleInformationLookupTool
         /// </summary>
         public void Dispose()
         {
-            if (this.excel != null)
+            if (this._excel != null)
             {
-                this.excel.Dispose();
-                this.excel = null;
+                this._excel.Dispose();
+                this._excel = null;
             }
 
-            if (this.vinData != null)
+            if (this._vinData != null)
             {
-                this.vinData.Dispose();
-                this.vinData = null;
+                this._vinData.Dispose();
+                this._vinData = null;
             }
 
-            if (this.downloadCancellationSource != null)
+            if (this._downloadCancellationSource != null)
             {
-                this.downloadCancellationSource.Dispose();
-                this.downloadCancellationSource = null;
+                this._downloadCancellationSource.Dispose();
+                this._downloadCancellationSource = null;
             }
         }
 
-        /// <remarks> Please refer to MainWindow.Events.cs and MainWindow.Methods.cs for the code you might expect to see here </remarks>
     }
 }

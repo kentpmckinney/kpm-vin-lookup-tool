@@ -61,14 +61,14 @@ namespace VehicleInformationLookupTool
         /// Get a worksheet in the loaded file that heuristically seems to contain a column with VIN numbers
         /// </summary>
         /// <returns> The index of the worksheet </returns>
-        int SheetLikelyToContainVINs();
+        int SheetLikelyToContainVins();
 
         /// <summary>
         /// Get a column within a worksheet that heuristically seems to contain VIN numbers
         /// </summary>
         /// <param name="sheetName"> The name of the worksheet </param>
         /// <returns> The index of the column </returns>
-        int ColumnLikelyToContainVINs(string sheetName);
+        int ColumnLikelyToContainVins(string sheetName);
 
         /// <summary>
         /// Save data to an Excel file

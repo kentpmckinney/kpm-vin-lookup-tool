@@ -10,7 +10,6 @@ namespace VehicleInformationLookupTool
     using System.Collections.Generic;
     using System.IO;
     using System.Net;
-    using System.Windows;
     using System.Xml;
 
     /// <summary>
@@ -23,22 +22,22 @@ namespace VehicleInformationLookupTool
         /// </summary>
         /// <param name="uri"> The fully-qualified location of the web service </param>
         /// <returns> A boolean that if true means the web service is working properly </returns>
-        public bool NHTSAServiceIsWorking(string uri)
+        public bool NhtsaServiceIsWorking(string uri)
         {
             /* This method assumes that it should get XML results with a Message node in it */
             
-            const string TESTVIN = "JH4TB2H26CC000000";
-            string vinUri = uri.Replace("{VIN}", TESTVIN);
+            const string testvin = "JH4TB2H26CC000000";
+            var vinUri = uri.Replace("{VIN}", testvin);
 
-            string rawXmlString = string.Empty;
-            using (WebClient web = new WebClient())
+            var rawXmlString = default(string);
+            using (var web = new WebClient())
             {
                 rawXmlString = web.DownloadString(vinUri);
             }
 
-            XmlDocument xmlDoc = new XmlDocument();
+            var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(rawXmlString);
-            XmlNodeList messageNode = xmlDoc.SelectNodes(@"//Message");
+            var messageNode = xmlDoc.SelectNodes(@"//Message");
 
             return messageNode[0].InnerText.StartsWith("Results returned successfully");
         }
@@ -54,29 +53,29 @@ namespace VehicleInformationLookupTool
         {
             /* This method is called from an alternate thread */
 
-            string vinUri = uri.Replace("{VIN}", vin);
+            var vinUri = uri.Replace("{VIN}", vin);
 
-            string rawXmlString = string.Empty;
-            using (WebClient web = new WebClient())
+            var rawXmlString = default(string);
+            using (var web = new WebClient())
             {
                 rawXmlString = web.DownloadString(vinUri);
             }
 
-            XmlDocument xmlDoc = new XmlDocument();
+            var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(rawXmlString);
-            XmlNodeList nodes = xmlDoc.SelectNodes(xpath);
+            var nodes = xmlDoc.SelectNodes(xpath);
 
-            XmlNodeList messageNode = xmlDoc.SelectNodes(@"//Message");
-            string message = messageNode[0]?.InnerText ?? "";
+            var messageNode = xmlDoc.SelectNodes(@"//Message");
+            var message = messageNode[0]?.InnerText ?? "";
 
-            XmlNodeList errorNode = xmlDoc.SelectNodes(@"//ErrorCode");
-            string error = "";
+            var errorNode = xmlDoc.SelectNodes(@"//ErrorCode");
+            var error = "";
             if (errorNode[0] != null && errorNode[0].InnerText != null)
             {
                 error = errorNode[0].InnerText;
             }
 
-            XmlNodeList suggestedVinNode = xmlDoc.SelectNodes(@"//SuggestedVIN");
+            var suggestedVinNode = xmlDoc.SelectNodes(@"//SuggestedVIN");
             string suggestedVin = "";
             if (suggestedVinNode[0] != null && suggestedVinNode[0].InnerText != null)
             {
@@ -84,12 +83,12 @@ namespace VehicleInformationLookupTool
             }
 
             /* Logic to auto-correct VIN number */
-            bool vinWasAutoCorrected = false;
+            var vinWasAutoCorrected = false;
             if (autoCorrect)
             {
                 if (error.StartsWith("2") || error.StartsWith("3") || error.StartsWith("4"))
                 {
-                    XmlNodeList vinNode = xmlDoc.SelectNodes(@"//VIN");
+                    var vinNode = xmlDoc.SelectNodes(@"//VIN");
                     vinNode[0].InnerText = suggestedVin;
                     vinWasAutoCorrected = true;
                 }
@@ -104,8 +103,8 @@ namespace VehicleInformationLookupTool
                 }
             }
 
-            List<string> vinItems = new List<string>();
-            for (int i = 0; i < nodes.Count; i++)
+            var vinItems = new List<string>();
+            for (var i = 0; i < nodes.Count; i++)
             {
                 vinItems.Add(nodes[i].InnerText);
             }
@@ -126,21 +125,21 @@ namespace VehicleInformationLookupTool
         {
             /* This method assumes that header fields are the same for all results */
 
-            const string TESTVIN = "JH4TB2H26CC000000";
-            string vinUri = uri.Replace("{VIN}", TESTVIN);
+            const string testvin = "JH4TB2H26CC000000";
+            var vinUri = uri.Replace("{VIN}", testvin);
 
-            string rawXmlString = string.Empty;
-            using (WebClient web = new WebClient())
+            var rawXmlString = default(string);
+            using (var web = new WebClient())
             {
                 rawXmlString = web.DownloadString(vinUri);
             }
 
-            XmlDocument xmlDoc = new XmlDocument();
+            var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(rawXmlString);
-            XmlNodeList nodes = xmlDoc.SelectNodes(xpath);
+            var nodes = xmlDoc.SelectNodes(xpath);
 
-            List<string> headerList = new List<string>();
-            for (int i = 0; i < nodes.Count; i++)
+            var headerList = new List<string>();
+            for (var i = 0; i < nodes.Count; i++)
             {
                 headerList.Add(nodes[i].Name);
             }
@@ -159,9 +158,9 @@ namespace VehicleInformationLookupTool
         {
             try
             {
-                using (WebClient web = new WebClient())
+                using (var web = new WebClient())
                 {
-                    using (Stream stream = web.OpenRead(@"http://www.google.com"))
+                    using (var stream = web.OpenRead(@"http://www.google.com"))
                     {
                         return true;
                     }
