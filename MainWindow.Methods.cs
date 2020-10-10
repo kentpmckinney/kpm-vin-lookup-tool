@@ -155,7 +155,7 @@ namespace VehicleInformationLookupTool
                 var key = software?.OpenSubKey("VehicleInformationLookupTool", RegistryKeyPermissionCheck.ReadWriteSubTree);
 
                 /* If the key was not found attempt to create it */
-                if (key == null)
+                if (key is null)
                 {
                     key = software?.CreateSubKey("VehicleInformationLookupTool"); 
                     key?.SetValue(valueName, valueString);
@@ -177,7 +177,7 @@ namespace VehicleInformationLookupTool
             var dialog = new OpenFileDialog()
             {
                 DefaultExt = ".xlsx",
-                Filter = "Excel files (*.xlsx;*.xls)|*.xlsx;*.xls|All files (*.*)|*.*"
+                Filter = "Excel files (*.xlsx;*.xls;*.csv)|*.xlsx;*.xls;*.csv|All files (*.*)|*.*"
             };
 
             /* Display the dialog and return the text entered by the user */
@@ -255,7 +255,7 @@ namespace VehicleInformationLookupTool
         /// <param name="dataValues"> A string array of values </param>
         private static void AddVinRowToDataTable(in DataTable table, in List<string> dataValues)
         {
-            if (table == null || dataValues == null)
+            if (table is null || dataValues is null)
                 return;
 
             var row = table.NewRow();

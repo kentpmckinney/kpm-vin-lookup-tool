@@ -310,7 +310,7 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page3TestWebService_Click(object sender, RoutedEventArgs e)
         {
-            var uri = Page3WebServiceURI.Text;
+            var uri = Page3WebServiceUri.Text;
 
             if (_web.NhtsaServiceIsWorking(uri))
             {
@@ -352,7 +352,7 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page3ResetDefault_Click(object sender, RoutedEventArgs e)
         {
-            Page3WebServiceURI.Text = "http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinExtended/{VIN}?format=xml";
+            Page3WebServiceUri.Text = "http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinExtended/{VIN}?format=xml";
             Page3DataNodeXpath.Text = "/Response/Results/*";
         }
 
@@ -367,7 +367,7 @@ namespace VehicleInformationLookupTool
         private void Page4ProgressBar_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             /* Run only once when ItemsSource is still null */
-            if (Page4DataGrid.ItemsSource == null)
+            if (Page4DataGrid.ItemsSource is null)
             {
                 DownloadVinData();
             }
@@ -378,7 +378,7 @@ namespace VehicleInformationLookupTool
         /// </summary>
         private void DownloadVinData()
         {
-            var uri = Page3WebServiceURI.Text;
+            var uri = Page3WebServiceUri.Text;
             var xpath = Page3DataNodeXpath.Text;
 
             /* Populate the list of VIN numbers */

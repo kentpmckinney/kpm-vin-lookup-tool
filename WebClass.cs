@@ -86,7 +86,7 @@ namespace VehicleInformationLookupTool
                 if (error.StartsWith("2") || error.StartsWith("3") || error.StartsWith("4"))
                 {
                     var vinNode = xmlDoc.SelectNodes(@"//VIN");
-                    if (vinNode != null)
+                    if (vinNode is null)
                     {
                         vinNode[0].InnerText = suggestedVin;
                         vinWasAutoCorrected = true;
@@ -134,7 +134,7 @@ namespace VehicleInformationLookupTool
             xmlDoc.LoadXml(rawXmlString);
             var nodes = xmlDoc.SelectNodes(xpath);
 
-            if (nodes == null)
+            if (nodes is null)
                 return default;
 
             var headerList = new List<string>();

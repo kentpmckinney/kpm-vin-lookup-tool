@@ -5,6 +5,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Xml.Linq;
+
 namespace VehicleInformationLookupTool
 {
     using System;
@@ -13,9 +15,10 @@ namespace VehicleInformationLookupTool
     using System.IO;
     using System.Linq;
     using System.Windows;
-    using Excel;
     using OfficeOpenXml;
     using System.Text;
+    using ExcelDataReader;
+
     /// <summary>
     /// Encapsulates Excel functionality
     /// </summary>
@@ -88,14 +91,17 @@ namespace VehicleInformationLookupTool
         /// <returns> A string array of worksheet names </returns>
         public List<string> GetSheetNames() => 
             (from DataTable table in _data.Tables select table.TableName).ToList();
-        
+
         /// <summary>
         /// Indicates whether the Excel file is valid or not
         /// </summary>
         /// <returns> A boolean indicating whether the file is valid </returns>
-        public bool IsValidFile() => 
-            _excelDataReader?.IsValid == true;
-        
+        public bool IsValidFile()
+        {
+            //_excelDataReader.IsValid == true;
+            return true;
+        }
+
         /// <summary>
         /// Opens an Excel file
         /// </summary>
@@ -111,12 +117,30 @@ namespace VehicleInformationLookupTool
             {
                 _fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read);
 
-                _excelDataReader = Path.GetExtension(fileName) == ".xls"
-                    ? ExcelReaderFactory.CreateBinaryReader(_fileStream, ReadOption.Loose)
-                    : ExcelReaderFactory.CreateOpenXmlReader(_fileStream);
+                _excelDataReader = default;
+                switch (Path.GetExtension(fileName).ToLower())
+                {
+                    case (".xls"):
+                        _excelDataReader = ExcelReaderFactory.CreateBinaryReader(_fileStream); //ReadOption.Loose
+                        break;
+                    case (".xlsx"):
+                        _excelDataReader = ExcelReaderFactory.CreateOpenXmlReader(_fileStream);
+                        break;
+                    case (".csv"):
+                        _excelDataReader = ExcelReaderFactory.CreateCsvReader(_fileStream);
+                        break;
+                    default:
+                        _excelDataReader = ExcelReaderFactory.CreateReader(_fileStream);
+                        break;
+                }
 
-                _excelDataReader.IsFirstRowAsColumnNames = true;
-                _data = _excelDataReader?.AsDataSet();
+                _data = _excelDataReader?.AsDataSet(new ExcelDataSetConfiguration()
+                {
+                    ConfigureDataTable = (tableReader) => new ExcelDataTableConfiguration()
+                    {
+                        UseHeaderRow = true
+                    }
+                });
             }
             catch (IOException)
             {
