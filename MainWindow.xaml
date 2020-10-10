@@ -219,12 +219,12 @@
                     <TextBox x:Name="Page7SavedFileTextBox" Canvas.Left="188" Canvas.Top="126" Width="618" Height="44" Background="Transparent" BorderThickness="0" Text="" TextWrapping="Wrap" />
                     <TextBlock Canvas.Left="188" Canvas.Top="213">
                         <TextBlock Text="This application uses " />
-                        <Hyperlink Click="Hyperlink_Click" NavigateUri="https://github.com/ExcelDataReader/ExcelDataReader">Excel Data Reader for .NET</Hyperlink>
+                        <Hyperlink Click="Hyperlink_Click" NavigateUri="https://github.com/ExcelDataReader/ExcelDataReader"><Run Text="Excel Data Reader for .NET"/></Hyperlink>
                         <TextBlock Text=" to read Excel files." />
                     </TextBlock>
                     <TextBlock Canvas.Left="188" Canvas.Top="230">
                         <TextBlock Text="This application uses " />
-                        <Hyperlink Click="Hyperlink_Click" NavigateUri="https://github.com/JanKallman/EPPlus"><Run Text="EPPlus" />
+                        <Hyperlink Click="Hyperlink_Click" NavigateUri="https://github.com/JanKallman/EPPlus"><Run Text="EPPlus 4.5.3.3" />
                         </Hyperlink>
                         <TextBlock Text=" to write Excel files" />
                     </TextBlock>
