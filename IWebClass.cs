@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="IWebClass.cs" company="N/A">
-//     Copyright (c) 2016 Kent P. McKinney
+//     Copyright (c) 2016, 2020 Kent P. McKinney
 //     Released under the terms of the MIT License
 // </copyright>
 //-----------------------------------------------------------------------

@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
 // <copyright file="MainWindow.xaml.cs" company="N/A">
-//     Copyright (c) 2016 Kent P. McKinney
+//     Copyright (c) 2016, 2020 Kent P. McKinney
 //     Released under the terms of the MIT License
 // </copyright>
 //-----------------------------------------------------------------------
@@ -49,7 +49,7 @@ namespace VehicleInformationLookupTool
         public MainWindow()
         {
             // Data initialization for MainWindow
-            this._downloadCancellationToken = this._downloadCancellationSource.Token;
+            _downloadCancellationToken = _downloadCancellationSource.Token;
 
             // Increase the maximum number of HTTP connections (the default is 2)
             ServicePointManager.DefaultConnectionLimit = 4;
@@ -58,7 +58,7 @@ namespace VehicleInformationLookupTool
             // Enable all commonly used HTTPS protocols
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
 
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         /// <summary>
@@ -66,22 +66,22 @@ namespace VehicleInformationLookupTool
         /// </summary>
         public void Dispose()
         {
-            if (this._excel != null)
+            if (_excel != null)
             {
-                this._excel.Dispose();
-                this._excel = null;
+                _excel.Dispose();
+                _excel = null;
             }
 
-            if (this._vinData != null)
+            if (_vinData != null)
             {
-                this._vinData.Dispose();
-                this._vinData = null;
+                _vinData.Dispose();
+                _vinData = null;
             }
 
-            if (this._downloadCancellationSource != null)
+            if (_downloadCancellationSource != null)
             {
-                this._downloadCancellationSource.Dispose();
-                this._downloadCancellationSource = null;
+                _downloadCancellationSource.Dispose();
+                _downloadCancellationSource = null;
             }
         }
 

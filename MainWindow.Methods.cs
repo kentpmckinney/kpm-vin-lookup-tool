@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="MainWindow.Methods.cs" company="N/A">
-//     Copyright (c) 2016 Kent P. McKinney
+//     Copyright (c) 2016, 2020 Kent P. McKinney
 //     Released under the terms of the MIT License
 // </copyright>
 //-----------------------------------------------------------------------
@@ -10,7 +10,6 @@ using System.Linq;
 namespace VehicleInformationLookupTool
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Data;
     using System.Diagnostics;
@@ -50,7 +49,7 @@ namespace VehicleInformationLookupTool
         /// </summary>
         /// <param name="textContainingVINs"> Raw text input </param>
         /// <returns> A DataTable with the VINs in a single column </returns>
-        private static DataTable VinTextToDataTable(string textContainingVINs)
+        private static DataTable VinTextToDataTable(string textContainingVins)
         {
             /*
               Requirement: the user must only use commas, semicolons, and newlines to delineate VINs (as indicated in the UI)
@@ -58,15 +57,15 @@ namespace VehicleInformationLookupTool
             */
 
             /* Normalize the text so that there is one VIN per line */
-            textContainingVINs = textContainingVINs.Replace(";", "\n");
-            textContainingVINs = textContainingVINs.Replace(",", "\n");
-            textContainingVINs = textContainingVINs.Replace(Environment.NewLine, "\n");
-            textContainingVINs = textContainingVINs.Replace("\n\n\n", "\n");
-            textContainingVINs = textContainingVINs.Replace("\n\n", "\n");
-            textContainingVINs = textContainingVINs.Replace(" ", string.Empty);
+            textContainingVins = textContainingVins.Replace(";", "\n");
+            textContainingVins = textContainingVins.Replace(",", "\n");
+            textContainingVins = textContainingVins.Replace(Environment.NewLine, "\n");
+            textContainingVins = textContainingVins.Replace("\n\n\n", "\n");
+            textContainingVins = textContainingVins.Replace("\n\n", "\n");
+            textContainingVins = textContainingVins.Replace(" ", string.Empty);
 
             /* Convert the text into a list of strings */
-            var vinList = textContainingVINs.Split('\n');
+            var vinList = textContainingVins.Split('\n');
 
             /* Create a DataTable */
             var table = new DataTable();
@@ -92,12 +91,12 @@ namespace VehicleInformationLookupTool
         /// <returns> True or false </returns>
         private bool IsFirstRun()
         {
-            if (this.ReadRegistryString("FirstRun") == "False")
+            if (ReadRegistryString("FirstRun") == "False")
             {
                 return false;
             }
             
-            this.WriteRegistryString("FirstRun", "False");
+            WriteRegistryString("FirstRun", "False");
             return true;
         }
 
@@ -120,7 +119,7 @@ namespace VehicleInformationLookupTool
         /// </summary>
         /// <param name="valueName"> The name of the registry value </param>
         /// <returns> A string that is empty or which contains the specified registry value </returns>
-        private string ReadRegistryString(string valueName)
+        private static string ReadRegistryString(string valueName)
         {
             try
             {
@@ -146,7 +145,7 @@ namespace VehicleInformationLookupTool
         /// </summary>
         /// <param name="valueName"> The name of the registry value </param>
         /// <param name="valueString"> The string value </param>
-        private void WriteRegistryString(string valueName, string valueString)
+        private static void WriteRegistryString(string valueName, string valueString)
         {
             try
             {
@@ -193,7 +192,7 @@ namespace VehicleInformationLookupTool
         /// <returns> A string that is empty or which contains the name of a file </returns>
         private string PromptSaveExcelFileName()
         {
-            var dialog = page6CreateNewExcelFileRadioButton.IsChecked == true
+            var dialog = Page6CreateNewExcelFileRadioButton.IsChecked == true
                 ? new SaveFileDialog()
                 {
                     DefaultExt = ".xlsx",
@@ -221,9 +220,9 @@ namespace VehicleInformationLookupTool
         /// <param name="grid"> A reference to the source DataGrid </param>
         /// <param name="columnName"> The name of the source column </param>
         /// <returns> String array containing vin numbers </returns>
-        private List<string> GetVinList(DataGrid grid, string columnName)
+        private static List<string> GetVinList(in DataGrid grid, string columnName)
         {
-            var columnIndex = this.GetDataGridColumnIndex(grid, columnName);
+            var columnIndex = GetDataGridColumnIndex(grid, columnName);
             var rows = grid.ItemsSource;
 
             return (from DataRowView row in rows select row[columnIndex] as string).ToList();
@@ -235,7 +234,7 @@ namespace VehicleInformationLookupTool
         /// <param name="grid"> A reference to the source DataGrid </param>
         /// <param name="columnName"> The name of the source column </param>
         /// <returns> Column index </returns>
-        private int GetDataGridColumnIndex(DataGrid grid, string columnName)
+        private static int GetDataGridColumnIndex(in DataGrid grid, string columnName)
         {
             for (var i = 0; i < grid.Columns.Count; i++)
             {
@@ -254,13 +253,11 @@ namespace VehicleInformationLookupTool
         /// </summary>
         /// <param name="table"> A reference to the target DataTable </param>
         /// <param name="dataValues"> A string array of values </param>
-        private static void AddVinRowToDataTable(DataTable table, List<string> dataValues)
+        private static void AddVinRowToDataTable(in DataTable table, in List<string> dataValues)
         {
-            if (dataValues == null)
-            {
+            if (table == null || dataValues == null)
                 return;
-            }
-            
+
             var row = table.NewRow();
             for (var i = 0; i < dataValues.Count; i++)
             {
@@ -269,14 +266,14 @@ namespace VehicleInformationLookupTool
 
             table.Rows.Add(row);
         }
-        
+
         /// <summary>
         /// Get the column headers of a DataGrid
         /// </summary>
-        /// <param name="grid"> A reference to the source DataGrid </param>
+        /// <param name="datagrid"> A reference to the source DataGrid </param>
         /// <returns> String array </returns>
-        private List<string> GetDataGridColumnNames(DataGrid grid) => 
-            grid.Columns.Select(column => column.Header.ToString()).ToList();
+        private static List<string> GetDataGridColumnNames(in DataGrid datagrid) =>
+            datagrid?.Columns.Select(column => column.Header.ToString()).ToList();
 
         /// <summary>
         /// Get the data values in a DataGrid at the specified row
@@ -284,7 +281,7 @@ namespace VehicleInformationLookupTool
         /// <param name="datagrid"> A reference to the source DataGrid </param>
         /// <param name="rowNumber"> Index of the row </param>
         /// <returns> String array containing data values </returns>
-        private List<string> GetDataGridRowValues(DataGrid datagrid, int rowNumber)
+        private static List<string> GetDataGridRowValues(in DataGrid datagrid, int rowNumber)
         {
             var dataValues = new List<string>();
             var row = datagrid?.Items[rowNumber] as DataRowView;
@@ -300,10 +297,10 @@ namespace VehicleInformationLookupTool
         /// <summary>
         /// Ensure that the order of items in the DataGrid follows the specified list
         /// </summary>
-        /// <param name="grid"> Source DataGrid reference </param>
+        /// <param name="datagrid"> Source DataGrid reference </param>
         /// <param name="columnToOrder"> Source column name </param>
         /// <param name="orderedStringList"> String list in the correct order </param>
-        private void OrderGridViewItems(DataGrid grid, string columnToOrder, List<string> orderedStringList)
+        private void OrderGridViewItems(in DataGrid datagrid, string columnToOrder, in List<string> orderedStringList)
         {
             ////THIS FUNCTION DROPS CORRECTED VIN NUMBERS
 
@@ -311,17 +308,17 @@ namespace VehicleInformationLookupTool
             var orderedData = new DataTable();
 
             /* Add columns */
-            var columnNames = this.GetDataGridColumnNames(grid);
+            var columnNames = GetDataGridColumnNames(datagrid);
             foreach (var name in columnNames)
             {
                 orderedData.Columns.Add(name);
             }
 
             /* Add rows */
-            var columnIndex = this.GetDataGridColumnIndex(grid, columnToOrder);
+            var columnIndex = GetDataGridColumnIndex(datagrid, columnToOrder);
             foreach (var orderedVinNumber in orderedStringList)
             {
-                foreach (DataRowView row in grid.Items)
+                foreach (DataRowView row in datagrid.Items)
                 {
                     if (orderedVinNumber == row[columnIndex] as string)
                     {
@@ -332,7 +329,7 @@ namespace VehicleInformationLookupTool
             }
 
             /* Replace the old ItemsSource with the new DataTable */
-            grid.ItemsSource = orderedData.DefaultView;
+            datagrid.ItemsSource = orderedData.DefaultView;
         }
     }
 }

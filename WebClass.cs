@@ -1,9 +1,13 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="WebClass.cs" company="N/A">
-//     Copyright (c) 2016 Kent P. McKinney
+//     Copyright (c) 2016, 2020 Kent P. McKinney
 //     Released under the terms of the MIT License
 // </copyright>
 //-----------------------------------------------------------------------
+
+using System;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace VehicleInformationLookupTool
 {
@@ -39,7 +43,7 @@ namespace VehicleInformationLookupTool
             xmlDoc.LoadXml(rawXmlString);
             var messageNode = xmlDoc.SelectNodes(@"//Message");
 
-            return messageNode[0].InnerText.StartsWith("Results returned successfully");
+            return messageNode != null && messageNode[0].InnerText.StartsWith("Results returned successfully");
         }
 
         /// <summary>
@@ -66,21 +70,13 @@ namespace VehicleInformationLookupTool
             var nodes = xmlDoc.SelectNodes(xpath);
 
             var messageNode = xmlDoc.SelectNodes(@"//Message");
-            var message = messageNode[0]?.InnerText ?? "";
+            var message = messageNode?[0]?.InnerText ?? "";
 
             var errorNode = xmlDoc.SelectNodes(@"//ErrorCode");
-            var error = "";
-            if (errorNode[0] != null && errorNode[0].InnerText != null)
-            {
-                error = errorNode[0].InnerText;
-            }
-
+            var error = errorNode?[0]?.InnerText ?? "";
+            
             var suggestedVinNode = xmlDoc.SelectNodes(@"//SuggestedVIN");
-            string suggestedVin = "";
-            if (suggestedVinNode[0] != null && suggestedVinNode[0].InnerText != null)
-            {
-                suggestedVin = suggestedVinNode[0].InnerText;
-            }
+            var suggestedVin = suggestedVinNode?[0]?.InnerText ?? "";
 
             /* Logic to auto-correct VIN number */
             var vinWasAutoCorrected = false;
@@ -89,26 +85,25 @@ namespace VehicleInformationLookupTool
                 if (error.StartsWith("2") || error.StartsWith("3") || error.StartsWith("4"))
                 {
                     var vinNode = xmlDoc.SelectNodes(@"//VIN");
-                    vinNode[0].InnerText = suggestedVin;
-                    vinWasAutoCorrected = true;
+                    if (vinNode != null)
+                    {
+                        vinNode[0].InnerText = suggestedVin;
+                        vinWasAutoCorrected = true;
+                    }
                 }
             }
 
             /* Logic to discard invalid VIN data */
+            // TODO: double check this logic
             if (discardInvalid)
             {
-                if ((message == "Invalid URL") || error.StartsWith("11"))
+                if (message == "Invalid URL" || error.StartsWith("11"))
                 {
                     return null;
                 }
             }
-
-            var vinItems = new List<string>();
-            for (var i = 0; i < nodes.Count; i++)
-            {
-                vinItems.Add(nodes[i].InnerText);
-            }
-
+            
+            var vinItems = (from XmlNode node in nodes select node?["Value"]?.InnerText).ToList();
             vinItems.Add(message);
             vinItems.Add(vinWasAutoCorrected.ToString());
 
@@ -138,12 +133,15 @@ namespace VehicleInformationLookupTool
             xmlDoc.LoadXml(rawXmlString);
             var nodes = xmlDoc.SelectNodes(xpath);
 
-            var headerList = new List<string>();
-            for (var i = 0; i < nodes.Count; i++)
-            {
-                headerList.Add(nodes[i].Name);
-            }
+            if (nodes == null)
+                return default;
 
+            var headerList = new List<string>();
+            foreach (XmlNode node in nodes)
+            {
+                var columnName = node?["Variable"]?.FirstChild.InnerText ?? "";
+                headerList.Add(columnName);
+            }
             headerList.Add("MessageFromServer");
             headerList.Add("AutoCorrectedVIN");
 
@@ -162,7 +160,10 @@ namespace VehicleInformationLookupTool
                 {
                     using (var stream = web.OpenRead(@"http://www.google.com"))
                     {
-                        return true;
+                        if (stream != null && stream.CanRead)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
@@ -170,6 +171,8 @@ namespace VehicleInformationLookupTool
             {
                 return false;
             }
+
+            return false;
         }
     }
 }

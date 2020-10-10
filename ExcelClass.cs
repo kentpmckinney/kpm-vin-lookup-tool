@@ -120,7 +120,7 @@ namespace VehicleInformationLookupTool
             }
             catch (IOException)
             {
-                MessageBox.Show("The file could not be opened, possiby because it is open in another program:\n\n" + fileName, "Unable to Open File");
+                MessageBox.Show("The file could not be opened, possibly because it is open in another program:\n\n" + fileName, "Unable to Open File");
             }
         }
 

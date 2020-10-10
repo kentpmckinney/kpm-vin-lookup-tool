@@ -31,10 +31,8 @@ namespace VehicleInformationLookupTool
         /// </summary>
         /// <param name="sender"> The element which raised the event </param>
         /// <param name="e"> Event arguments </param>
-        private void Window_Closing(object sender, CancelEventArgs e)
-        {
+        private void Window_Closing(object sender, CancelEventArgs e) =>
             Settings.Default.Save();
-        }
 
         /// <summary>
         /// Shut down the application
@@ -55,44 +53,32 @@ namespace VehicleInformationLookupTool
         /// </summary>
         /// <param name="sender"> The element which raised the event </param>
         /// <param name="e"> Event arguments </param>
-        private void GoToNextPage(object sender, RoutedEventArgs e)
-        {
-            /* It's a bit odd but Dispatcher.BeginInvoke() is the only
-            simple and reliable means I could find to switch tab pages */
-            Dispatcher.BeginInvoke(new Action(() => tabControl.SelectedIndex++));
-        }
-
+        private void GoToNextPage(object sender, RoutedEventArgs e) =>
+            Dispatcher.BeginInvoke(new Action(() => TabControl.SelectedIndex++));
+        
         /// <summary>
         /// Go back to the previous page
         /// </summary>
         /// <param name="sender"> The element which raised the event </param>
         /// <param name="e"> Event arguments </param>
-        private void GoToPreviousPage(object sender, RoutedEventArgs e)
-        {
-            /* It's a bit odd but Dispatcher.BeginInvoke() is the only
-            simple and reliable means I could find to switch tab pages */
-            Dispatcher.BeginInvoke(new Action(() => tabControl.SelectedIndex--));
-        }
+        private void GoToPreviousPage(object sender, RoutedEventArgs e) =>
+            Dispatcher.BeginInvoke(new Action(() => TabControl.SelectedIndex--));
 
         /// <summary>
         /// Opens the NavigateUri parameter of a Hyperlink element in the default browser
         /// </summary>
         /// <param name="sender"> The element which raised the event </param>
         /// <param name="e"> Event arguments </param>
-        private void Hyperlink_Click(object sender, RoutedEventArgs e)
-        {
+        private void Hyperlink_Click(object sender, RoutedEventArgs e) =>
             LaunchWebBrowser((e.Source as Hyperlink)?.NavigateUri.OriginalString);
-        }
 
         /// <summary>
         /// Displays the help file and shows the topic specified in the Tag property of the sender
         /// </summary>
         /// <param name="sender"> The element which raised the event </param>
         /// <param name="e"> Event arguments </param>
-        private void Help_Click(object sender, RoutedEventArgs e)
-        {
+        private void Help_Click(object sender, RoutedEventArgs e) =>
             HelpClass.ShowTopic((sender as FrameworkElement)?.Tag as string);
-        }
 
         /// <summary>
         /// Skip the about and EULA pages if the appropriate conditions are met
@@ -102,17 +88,17 @@ namespace VehicleInformationLookupTool
         private void AboutPageTabLoaded(object sender, RoutedEventArgs e)
         {
             /* Show the about page on the first run of the application and skip otherwise */
-            if (this.IsFirstRun() == false)
-            {
-                this.GoToNextPage(null, null);
+            if (IsFirstRun() == true)
+                return;
+            
+            GoToNextPage(null, null);
 
-                /* Skip the EULA page if the user has previously agreed to the terms
-                but never on the first run of the application */
-                if (this.UserHasAgreedToEula() == true)
-                {
-                    eulaCheckBox.IsChecked = true;
-                    this.GoToNextPage(null, null);
-                }
+            /* Skip the EULA page if the user has previously agreed to the terms
+            but never on the first run of the application */
+            if (UserHasAgreedToEula())
+            {
+                EulaCheckBox.IsChecked = true;
+                GoToNextPage(null, null);
             }
         }
 
@@ -123,15 +109,15 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void EulaPageCheckBox_Click(object sender, RoutedEventArgs e)
         {
-            if (eulaCheckBox.IsChecked == true)
+            if (EulaCheckBox.IsChecked == true)
             {
                 this.SetUserAgreedToEula(true);
-                eulaPageNext.IsEnabled = true;
+                EulaPageNext.IsEnabled = true;
             }
             else
             {
                 this.SetUserAgreedToEula(false);
-                eulaPageNext.IsEnabled = false;
+                EulaPageNext.IsEnabled = false;
             }
         }
 
@@ -143,7 +129,7 @@ namespace VehicleInformationLookupTool
         private void Page1Browse_Click(object sender, RoutedEventArgs e)
         {
             /* Programmatically check the radio button to import from Excel */
-            page1SourceExcelRadioButton.IsChecked = true;
+            Page1SourceExcelRadioButton.IsChecked = true;
 
             var fileName = PromptOpenExcelFileName();
             if (!File.Exists(fileName))
@@ -156,16 +142,16 @@ namespace VehicleInformationLookupTool
                 var sheets = _excel.GetSheetNames();
                 foreach (var sheet in sheets)
                 {
-                    page1SheetComboBox.Items.Add(sheet);
+                    Page1SheetComboBox.Items.Add(sheet);
                 }
 
                 /* Display the open file, enable selection of a worksheet, and provide next step hint */
-                page1FileNameTextBox.Text = fileName;
-                page1SheetComboBox.IsEnabled = true;
-                page1Step1ComboHint.Visibility = Visibility.Visible;
+                Page1FileNameTextBox.Text = fileName;
+                Page1SheetComboBox.IsEnabled = true;
+                Page1Step1ComboHint.Visibility = Visibility.Visible;
 
                 /* Attempt to auto-select a worksheet */
-                page1SheetComboBox.SelectedIndex = _excel.SheetLikelyToContainVins();
+                Page1SheetComboBox.SelectedIndex = _excel.SheetLikelyToContainVins();
             }
 
             _excel.CloseFile();
@@ -179,20 +165,20 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page1SheetComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedSheet = page1SheetComboBox.SelectedItem.ToString();
+            var selectedSheet = Page1SheetComboBox.SelectedItem.ToString();
             var columnNames = _excel.GetColumnNames(selectedSheet);
             foreach (var name in columnNames)
             {
-                page1ColumnComboBox.Items.Add(name);
+                Page1ColumnComboBox.Items.Add(name);
             }
 
             /* Enable selection of a column and provide next step hint*/
-            page1ColumnComboBox.IsEnabled = true;
-            page1Step1ComboHint.Visibility = Visibility.Hidden;
-            page1Step2ComboHint.Visibility = Visibility.Visible;
+            Page1ColumnComboBox.IsEnabled = true;
+            Page1Step1ComboHint.Visibility = Visibility.Hidden;
+            Page1Step2ComboHint.Visibility = Visibility.Visible;
 
             /* Attempt to auto-select a column */
-            page1ColumnComboBox.SelectedIndex = _excel.ColumnLikelyToContainVins(selectedSheet);
+            Page1ColumnComboBox.SelectedIndex = _excel.ColumnLikelyToContainVins(selectedSheet);
         }
 
         /// <summary>
@@ -203,9 +189,9 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page1ColumnComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            page1Next.IsEnabled = true;
-            page1Step2ComboHint.Visibility = Visibility.Hidden;
-            page1Hint.Visibility = Visibility.Hidden;
+            Page1Next.IsEnabled = true;
+            Page1Step2ComboHint.Visibility = Visibility.Hidden;
+            Page1Hint.Visibility = Visibility.Hidden;
         }
 
         /// <summary>
@@ -216,11 +202,11 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page1TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            page1Hint.Visibility = Visibility.Hidden;
-            page1Next.IsEnabled = true;
+            Page1Hint.Visibility = Visibility.Hidden;
+            Page1Next.IsEnabled = true;
 
             /* Programmatically check the radio button indicating text source */
-            page1SourceTextRadioButton.IsChecked = true;
+            Page1SourceTextRadioButton.IsChecked = true;
         }
 
         /// <summary>
@@ -231,16 +217,16 @@ namespace VehicleInformationLookupTool
         private void Page1Next_Click(object sender, RoutedEventArgs e)
         {
             /* Clear highlighting in the scenario where the column of interest has changed */
-            page2DataGrid.ItemsSource = null;
+            Page2DataGrid.ItemsSource = null;
 
-            if (page1SourceExcelRadioButton.IsChecked == true)
+            if (Page1SourceExcelRadioButton.IsChecked == true)
             {
-                var worksheetIndex = page1SheetComboBox.SelectedIndex;
-                page2DataGrid.ItemsSource = this._excel.GetDataTable(worksheetIndex).DefaultView;
+                var worksheetIndex = Page1SheetComboBox.SelectedIndex;
+                Page2DataGrid.ItemsSource = _excel.GetDataTable(worksheetIndex).DefaultView;
             }
             else
             {
-                page2DataGrid.ItemsSource = VinTextToDataTable(page1TextBox.Text).DefaultView;
+                Page2DataGrid.ItemsSource = VinTextToDataTable(Page1TextBox.Text).DefaultView;
             }
 
             GoToNextPage(null, null);
@@ -253,10 +239,10 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page2DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            if (page1SourceExcelRadioButton.IsChecked == true)
+            if (Page1SourceExcelRadioButton.IsChecked == true)
             {
                 /* In this scenario the column being automatically generated matches the selected column */
-                if (e.Column.Header.ToString() == page1ColumnComboBox.SelectedItem.ToString())
+                if (e.Column.Header.ToString() == Page1ColumnComboBox.SelectedItem.ToString())
                 {
                     e.Column.CellStyle = new System.Windows.Style(typeof(DataGridCell));
                     e.Column.CellStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(Colors.LightYellow)));
@@ -292,15 +278,15 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page2ValidCheckBox_Click(object sender, RoutedEventArgs e)
         {
-            if (page2ValidCheckBox.IsChecked == true)
+            if (Page2ValidCheckBox.IsChecked == true)
             {
-                page2Next.IsEnabled = true;
-                page2Hint.Visibility = Visibility.Hidden;
+                Page2Next.IsEnabled = true;
+                Page2Hint.Visibility = Visibility.Hidden;
             }
             else
             {
-                page2Next.IsEnabled = false;
-                page2Hint.Visibility = Visibility.Visible;
+                Page2Next.IsEnabled = false;
+                Page2Hint.Visibility = Visibility.Visible;
             }
         }
 
@@ -324,24 +310,24 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page3TestWebService_Click(object sender, RoutedEventArgs e)
         {
-            var uri = page3WebServiceURI.Text;
+            var uri = Page3WebServiceURI.Text;
 
-            if (_web.NhtsaServiceIsWorking(uri) == true)
+            if (_web.NhtsaServiceIsWorking(uri))
             {
-                page3StatusTextBlock.Text = "Success";
-                page3Hint.Visibility = Visibility.Hidden;
-                page3Next.IsEnabled = true;
+                Page3StatusTextBlock.Text = "Success";
+                Page3Hint.Visibility = Visibility.Hidden;
+                Page3Next.IsEnabled = true;
             }
             else
             {
-                page3StatusTextBlock.Text = "Unable to connect to the NHTSA service. ";
+                Page3StatusTextBlock.Text = "Unable to connect to the NHTSA service. ";
                 if (_web.IsConnectedToInternet() == true)
                 {
-                    page3StatusTextBlock.Text += "Please verify configuration settings and click Try Again.";
+                    Page3StatusTextBlock.Text += "Please verify configuration settings and click Try Again.";
                 }
                 else
                 {
-                    page3StatusTextBlock.Text += "Please verify Internet connectivity and click Try Again.";
+                    Page3StatusTextBlock.Text += "Please verify Internet connectivity and click Try Again.";
                 }
             }
         }
@@ -353,7 +339,7 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page3Next_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (page3Next?.IsEnabled == true)
+            if (Page3Next?.IsEnabled == true)
             {
                 GoToNextPage(null, null);
             }
@@ -366,8 +352,8 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page3ResetDefault_Click(object sender, RoutedEventArgs e)
         {
-            page3WebServiceURI.Text = "http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinExtended/{VIN}?format=xml";
-            page3DataNodeXpath.Text = "/Response/Results/DecodedVariable/*";
+            Page3WebServiceURI.Text = "http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinExtended/{VIN}?format=xml";
+            Page3DataNodeXpath.Text = "/Response/Results/*";
         }
 
         /// <summary>
@@ -381,7 +367,7 @@ namespace VehicleInformationLookupTool
         private void Page4ProgressBar_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             /* Run only once when ItemsSource is still null */
-            if (page4DataGrid.ItemsSource == null)
+            if (Page4DataGrid.ItemsSource == null)
             {
                 DownloadVinData();
             }
@@ -392,16 +378,16 @@ namespace VehicleInformationLookupTool
         /// </summary>
         private void DownloadVinData()
         {
-            var uri = page3WebServiceURI.Text;
-            var xpath = page3DataNodeXpath.Text;
+            var uri = Page3WebServiceURI.Text;
+            var xpath = Page3DataNodeXpath.Text;
 
             /* Populate the list of VIN numbers */
-            var vinList = page1SourceExcelRadioButton.IsChecked == true
-                ? GetVinList(this.page2DataGrid, page1ColumnComboBox.Text)
-                : GetVinList(this.page2DataGrid, "VIN");
+            var vinList = Page1SourceExcelRadioButton.IsChecked == true
+                ? GetVinList(Page2DataGrid, Page1ColumnComboBox.Text)
+                : GetVinList(Page2DataGrid, "VIN");
 
             /* Add columns to the DataTable */
-            var columnNames = this._web.GetVinColumnHeaders(uri, xpath);
+            var columnNames = _web.GetVinColumnHeaders(uri, xpath);
             foreach (var name in columnNames)
             {
                 _vinData.Columns.Add(name);
@@ -409,20 +395,20 @@ namespace VehicleInformationLookupTool
 
             /* Establish data binding between VinData and page4datagrid, which should happen
             after the columns have been added and before any rows are added*/
-            page4DataGrid.ItemsSource = _vinData.DefaultView;
+            Page4DataGrid.ItemsSource = _vinData.DefaultView;
 
             /* Set up the progress bar */
-            page4ProgressBar.Maximum = vinList.Count;
-            page4ProgressBar.Value = 0;
-            page4DownloadStatus.Text = "Status: Downloading...";
+            Page4ProgressBar.Maximum = vinList.Count;
+            Page4ProgressBar.Value = 0;
+            Page4DownloadStatus.Text = "Status: Downloading...";
 
             /* Temporarily change the text of the Cancel button at the bottom to "Exit" for clarity */
-            page4Cancel.Content = "Exit";
+            Page4Cancel.Content = "Exit";
 
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-            var autoCorrect = page2AutoCorrectVinCheckBox.IsChecked.Value;
-            var discardInvalid = page2DisgardInvalidVinCheckBox.IsChecked.Value;
+            var autoCorrect = Page2AutoCorrectVinCheckBox?.IsChecked == true;
+            var discardInvalid = Page2DiscardInvalidVinCheckBox?.IsChecked == true;
 
             var tasks = new List<Task>();
             foreach (var vinNumber in vinList)
@@ -430,29 +416,26 @@ namespace VehicleInformationLookupTool
                 // Each task added runs in a separate thread 
                 tasks.Add(
                     /* Start a new task to download data for the current VIN number and when done pass the result to the next step */
-                    Task<List<string>>.Factory.StartNew(() => this._web.GetVinDataRow(uri, vinNumber, xpath, autoCorrect, discardInvalid), this._downloadCancellationToken).ContinueWith(
-                        (task) =>
+                    Task<List<string>>.Factory
+                        .StartNew(() => _web
+                        .GetVinDataRow(uri, vinNumber, xpath, autoCorrect, discardInvalid), _downloadCancellationToken)
+                        .ContinueWith((task) =>
                         {
                             // Proceed only if the user has not requested cancellation
                             if (_downloadCancellationToken.IsCancellationRequested == false)
                             {
-                                AddVinRowToDataTable(this._vinData, task.Result);
-                                page4ProgressBar.Value++;
+                                AddVinRowToDataTable(_vinData, task.Result);
+                                Page4ProgressBar.Value++;
                             }
-                        },
-                        _downloadCancellationToken,
-                        TaskContinuationOptions.PreferFairness,
-                        scheduler));
+                        }, _downloadCancellationToken, TaskContinuationOptions.PreferFairness, scheduler));
             }
 
             /* Update the user interface when all tasks have completed
             (Creates a new cancellation token so that it runs even if the user clicks cancel) */ 
             Task.Factory.ContinueWhenAll(
                 tasks.ToArray(),
-                t => { UpdateUserInterfaceDownloadComplete(); },
-                new CancellationToken(),
-                TaskContinuationOptions.PreferFairness,
-                scheduler);
+                t => UpdateUserInterfaceDownloadComplete(),
+                new CancellationToken(), TaskContinuationOptions.PreferFairness, scheduler);
         }
 
         /// <summary>
@@ -475,19 +458,19 @@ namespace VehicleInformationLookupTool
             //}
 
             //Refresh the data view
-            page4DataGrid.Items.Refresh();
+            Page4DataGrid.Items.Refresh();
 
             /* Change the text of the Cancel button at the bottom back to "Cancel" */
-            page4Cancel.Content = "Cancel";
+            Page4Cancel.Content = "Cancel";
 
             /* Update the UI to reflect that the download is complete */
-            page4CancelDownloadButton.IsEnabled = false;
-            page4Hint.Visibility = Visibility.Hidden;
-            page4Save.IsEnabled = true;
-            page4Previous.IsEnabled = true;
-            page4Previous.IsEnabled = true;
-            page4DownloadStatus.Text = "Status: Completed";
-            page4ClipboardCopyButton.IsEnabled = true;
+            Page4CancelDownloadButton.IsEnabled = false;
+            Page4Hint.Visibility = Visibility.Hidden;
+            Page4Save.IsEnabled = true;
+            Page4Previous.IsEnabled = true;
+            Page4Previous.IsEnabled = true;
+            Page4DownloadStatus.Text = "Status: Completed";
+            Page4ClipboardCopyButton.IsEnabled = true;
         }
 
         /// <summary>
@@ -495,10 +478,8 @@ namespace VehicleInformationLookupTool
         /// </summary>
         /// <param name="sender"> The element which raised the event </param>
         /// <param name="e"> Event arguments </param>
-        private void Page4CancelDownload_Click(object sender, RoutedEventArgs e)
-        {
+        private void Page4CancelDownload_Click(object sender, RoutedEventArgs e) =>
             _downloadCancellationSource.Cancel(true);
-        }
 
         /// <summary>
         /// Copy all downloaded VIN data to the clipboard
@@ -513,8 +494,8 @@ namespace VehicleInformationLookupTool
 
             /* Add a header row to clipboardText */
             {
-                List<string> columnNames = this.GetDataGridColumnNames(page4DataGrid);
-                for (int i = 0; i < columnNames.Count; i++)
+                var columnNames = GetDataGridColumnNames(Page4DataGrid);
+                for (var i = 0; i < columnNames.Count; i++)
                 {
                     if (i == columnNames.Count)
                     {
@@ -531,13 +512,13 @@ namespace VehicleInformationLookupTool
 
             /* Add all data rows to clipboardText */
             {
-                var numRows = page4DataGrid.Items.Count;
-                var numColumns = page4DataGrid.Columns.Count;
+                var numRows = Page4DataGrid.Items.Count;
+                var numColumns = Page4DataGrid.Columns.Count;
                 var lastColumn = numColumns - 1;
 
                 for (var r = 0; r < numRows; r++)
                 {
-                    var columnValues = GetDataGridRowValues(page4DataGrid, r);
+                    var columnValues = GetDataGridRowValues(Page4DataGrid, r);
 
                     for (var c = 0; c < numColumns; c++)
                     {
@@ -573,11 +554,11 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page4Save_Click(object sender, RoutedEventArgs e)
         {
-            var columnNames = GetDataGridColumnNames(page4DataGrid);
+            var columnNames = GetDataGridColumnNames(Page4DataGrid);
             foreach (var name in columnNames)
             {
                 var box = new CheckBox() { Content = name, IsChecked = true };
-                page5ListView.Items.Add(box);
+                Page5ListView.Items.Add(box);
             }
 
             GoToNextPage(null, null);
@@ -590,16 +571,16 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page5CheckAllButton_Click(object sender, RoutedEventArgs e)
         {
-            var buttonText = page5CheckAllButton.Content as string;
+            var buttonText = Page5CheckAllButton.Content as string;
             var isButtonCheckAll = buttonText == "Check All";
 
-            foreach (CheckBox item in page5ListView.Items)
+            foreach (CheckBox item in Page5ListView.Items)
             {
                 item.IsChecked = isButtonCheckAll;
             }
 
             /* Toggle the text on the button to its logical opposite */
-            page5CheckAllButton.Content = isButtonCheckAll ? "Uncheck All" : "Check All";
+            Page5CheckAllButton.Content = isButtonCheckAll ? "Uncheck All" : "Check All";
         }
 
         /// <summary>
@@ -614,14 +595,14 @@ namespace VehicleInformationLookupTool
             if (!string.IsNullOrEmpty(fileName))
             {
                 // The fileName is likely valid
-                page6NewExcelFileTextBox.Text = fileName;
-                page6Save.IsEnabled = true;
+                Page6NewExcelFileTextBox.Text = fileName;
+                Page6Save.IsEnabled = true;
             }
             else
             {
                 // The fileName is definitely not valid
-                page6NewExcelFileTextBox.Text = string.Empty;
-                page6Save.IsEnabled = false;
+                Page6NewExcelFileTextBox.Text = string.Empty;
+                Page6Save.IsEnabled = false;
             }
         }
 
@@ -632,9 +613,9 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page6Save_Click(object sender, RoutedEventArgs e)
         {
-            if (page6CreateNewExcelFileRadioButton.IsChecked == true)
+            if (Page6CreateNewExcelFileRadioButton.IsChecked == true)
             {
-                var saveFileName = page6NewExcelFileTextBox.Text;
+                var saveFileName = Page6NewExcelFileTextBox.Text;
 
                 /* Abort if the file name is an empty string */
                 if (string.IsNullOrEmpty(saveFileName))
@@ -643,13 +624,13 @@ namespace VehicleInformationLookupTool
                 }
 
                 var filteredTable = new DataTable();
-                var columnNames = GetDataGridColumnNames(page4DataGrid);
+                var columnNames = GetDataGridColumnNames(Page4DataGrid);
 
                 /* Add column headers to the DataTable */
                 {
                     foreach (var name in columnNames)
                     {
-                        foreach (CheckBox item in page5ListView.Items)
+                        foreach (CheckBox item in Page5ListView.Items)
                         {
                             if (item.Content as string == name && item.IsChecked == true)
                             {
@@ -662,20 +643,20 @@ namespace VehicleInformationLookupTool
                 /* Add data rows to the worksheet */
                 {
                     /* For each row in the source DataGrid */
-                    var numRows = page4DataGrid.Items.Count;
+                    var numRows = Page4DataGrid.Items.Count;
                     for (var row = 0; row < numRows; row++)
                     {
                         var numCheckedColumns = 0;
                         var filteredRow = filteredTable.NewRow();
 
                         /* For each column in the source DataGrid via the return value of GetDataGridRowValues */
-                        var dataValues = GetDataGridRowValues(page4DataGrid, row);
+                        var dataValues = GetDataGridRowValues(Page4DataGrid, row);
                         for (var i = 0; i < dataValues.Count; i++)
                         {
                             var currentColumnName = columnNames[i];
 
                             /* Find the currentColumnName in page5ListView */
-                            foreach (CheckBox item in page5ListView.Items)
+                            foreach (CheckBox item in Page5ListView.Items)
                             {
                                 /* If currentColumnName is equal to the current ListView item and the item is checked */
                                 if (item.Content as string == currentColumnName && item.IsChecked == true)
@@ -693,18 +674,18 @@ namespace VehicleInformationLookupTool
                 var saveSuccessful = _excel.SaveExcelFile(saveFileName, filteredTable);
                 if (saveSuccessful)
                 {
-                    page6FileOpenHint.Visibility = Visibility.Hidden;
-                    page7SavedFileTextBox.Text = saveFileName;
+                    Page6FileOpenHint.Visibility = Visibility.Hidden;
+                    Page7SavedFileTextBox.Text = saveFileName;
                     GoToNextPage(null, null);
                 }
                 else
                 {
-                    page6FileOpenHint.Visibility = Visibility.Visible;
+                    Page6FileOpenHint.Visibility = Visibility.Visible;
                 }
             }
-            else if (page6CreateNewCsvFileRadioButton.IsChecked == true)
+            else if (Page6CreateNewCsvFileRadioButton.IsChecked == true)
             {
-                var saveFileName = page6NewExcelFileTextBox.Text;
+                var saveFileName = Page6NewExcelFileTextBox.Text;
 
                 /* Abort if the file name is an empty string */
                 if (string.IsNullOrEmpty(saveFileName))
@@ -713,13 +694,13 @@ namespace VehicleInformationLookupTool
                 }
 
                 var filteredTable = new DataTable();
-                var columnNames = GetDataGridColumnNames(page4DataGrid);
+                var columnNames = GetDataGridColumnNames(Page4DataGrid);
 
                 /* Add column headers to the DataTable */
                 {
                     foreach (var name in columnNames)
                     {
-                        foreach (CheckBox item in page5ListView.Items)
+                        foreach (CheckBox item in Page5ListView.Items)
                         {
                             if (item.Content as string == name && item.IsChecked == true)
                             {
@@ -732,20 +713,20 @@ namespace VehicleInformationLookupTool
                 /* Add data rows to the worksheet */
                 {
                     /* For each row in the source DataGrid */
-                    var numRows = page4DataGrid.Items.Count;
+                    var numRows = Page4DataGrid.Items.Count;
                     for (var row = 0; row < numRows; row++)
                     {
                         var numCheckedColumns = 0;
                         var filteredRow = filteredTable.NewRow();
 
                         /* For each column in the source DataGrid via the return value of GetDataGridRowValues */
-                        var dataValues = this.GetDataGridRowValues(page4DataGrid, row);
+                        var dataValues = GetDataGridRowValues(Page4DataGrid, row);
                         for (var i = 0; i < dataValues.Count; i++)
                         {
                             var currentColumnName = columnNames[i];
 
                             /* Find the currentColumnName in page5ListView */
-                            foreach (CheckBox item in page5ListView.Items)
+                            foreach (CheckBox item in Page5ListView.Items)
                             {
                                 /* If currentColumnName is equal to the current ListView item and the item is checked */
                                 if (item.Content as string == currentColumnName && item.IsChecked == true)
@@ -763,13 +744,13 @@ namespace VehicleInformationLookupTool
                 var saveSuccessful = _excel.SaveCsvFile(saveFileName, filteredTable);
                 if (saveSuccessful)
                 {
-                    page6FileOpenHint.Visibility = Visibility.Hidden;
-                    page7SavedFileTextBox.Text = saveFileName;
+                    Page6FileOpenHint.Visibility = Visibility.Hidden;
+                    Page7SavedFileTextBox.Text = saveFileName;
                     GoToNextPage(null, null);
                 }
                 else
                 {
-                    page6FileOpenHint.Visibility = Visibility.Visible;
+                    Page6FileOpenHint.Visibility = Visibility.Visible;
                 }
             }
         }
