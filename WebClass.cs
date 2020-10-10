@@ -79,6 +79,7 @@ namespace VehicleInformationLookupTool
             var suggestedVin = suggestedVinNode?[0]?.InnerText ?? "";
 
             /* Logic to auto-correct VIN number */
+            // TODO: DOUBLE CHECK THIS
             var vinWasAutoCorrected = false;
             if (autoCorrect)
             {
