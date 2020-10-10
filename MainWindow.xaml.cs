@@ -54,7 +54,9 @@ namespace VehicleInformationLookupTool
 
             // Increase the maximum number of HTTP connections (the default is 2)
             ServicePointManager.DefaultConnectionLimit = 4;
-            
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
+
             this.InitializeComponent();
         }
 

@@ -14,9 +14,8 @@ namespace VehicleInformationLookupTool
     using System.Linq;
     using System.Windows;
     using Excel;
-    using OpenXmlPackaging;
-    using VehicleInformationLookupTool;
-
+    using OfficeOpenXml;
+    using System.Text;
     /// <summary>
     /// Encapsulates Excel functionality
     /// </summary>
@@ -74,8 +73,15 @@ namespace VehicleInformationLookupTool
         /// </summary>
         public void CloseFile()
         {
-            this.excelDataReader.Close();
-            this.fileStream.Close();
+            if (excelDataReader != null)
+            {
+                this.excelDataReader.Close();
+            }
+
+            if (fileStream != null)
+            {
+                this.fileStream.Close();
+            }
         }
 
         /// <summary>
@@ -129,7 +135,15 @@ namespace VehicleInformationLookupTool
         /// <returns> A boolean indicating whether the file is valid </returns>
         public bool IsValidFile()
         {
-            bool valid = this.excelDataReader.IsValid;
+            bool valid;
+            try
+            {
+                valid = this.excelDataReader.IsValid;
+            }
+            catch (System.NullReferenceException)
+            {
+                valid = false;
+            }
             return valid;
         }
 
@@ -141,22 +155,29 @@ namespace VehicleInformationLookupTool
         {
             if (!File.Exists(fileName))
             {
-                MessageBox.Show("File Not Found", fileName);
+                MessageBox.Show(fileName, "File Not Found");
             }
 
-            this.fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read);
-
-            if (Path.GetExtension(fileName) == ".xls")
+            try
             {
-                this.excelDataReader = ExcelReaderFactory.CreateBinaryReader(this.fileStream, ReadOption.Loose);
-            }
-            else
-            {
-                this.excelDataReader = ExcelReaderFactory.CreateOpenXmlReader(this.fileStream);
-            }
+                this.fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read);
 
-            this.excelDataReader.IsFirstRowAsColumnNames = true;
-            this.data = this.excelDataReader.AsDataSet();
+                if (Path.GetExtension(fileName) == ".xls")
+                {
+                    this.excelDataReader = ExcelReaderFactory.CreateBinaryReader(this.fileStream, ReadOption.Loose);
+                }
+                else
+                {
+                    this.excelDataReader = ExcelReaderFactory.CreateOpenXmlReader(this.fileStream);
+                }
+
+                this.excelDataReader.IsFirstRowAsColumnNames = true;
+                this.data = this.excelDataReader.AsDataSet();
+            }
+            catch (System.IO.IOException)
+            {
+                MessageBox.Show("The file could not be opened, possiby because it is open in another program:\n\n" + fileName, "Unable to Open File");
+            }
         }
 
         /// <summary>
@@ -224,19 +245,69 @@ namespace VehicleInformationLookupTool
         {
             try
             {
-                using (SpreadsheetDocument doc = new SpreadsheetDocument(saveFileName))
+                /* Use EPPlus to save the Excel file */
+                using (ExcelPackage excel = new ExcelPackage(new FileInfo(saveFileName)))
                 {
-                    /* Create a worksheet */
-                    Worksheet sheet = doc.Worksheets.Add("Vehicle Information Lookup Tool");
+                    /* add a worksheet */
+                    ExcelWorksheet worksheet = excel.Workbook.Worksheets.Add("Vehicle Information Lookup Tool");
 
-                    /* Import the DataTable into the worksheet */
-                    sheet.ImportDataTable(data, "A1", true);
-                    
-                    /* 
-                      The OpenXmlPackaging documentation states:
-                      "No need to explicitly save/close the excel file.
-                       When you come out of the using statement, the file gets automatically saved!"
-                    */
+                    /* Load datatable into the worksheet */
+                    worksheet.SelectedRange.LoadFromDataTable(data, true);
+
+                    /* Autofit columns for all cells */
+                    worksheet.Cells.AutoFitColumns(0);
+
+                    /* Save the file */
+                    excel.Save();
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="saveFileName"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool SaveCsvFile(string saveFileName, DataTable data)
+        {
+            try
+            {
+                using (var writer = new StreamWriter(saveFileName))
+                {
+                    int numColumns = data.Columns.Count;
+                    int lastColumn = numColumns - 1;
+                    const string COMMA = ",";
+
+                    for (int r = 0; r < data.Rows.Count; r++)
+                    {
+                        StringBuilder line = new StringBuilder();
+                        object[] values = data.Rows[r].ItemArray;
+
+                        for (int c = 0; c < data.Columns.Count; c++)
+                        {
+                            string value = values[c].ToString();
+                            value = value.Replace(',',' ');
+
+                            if (c == lastColumn)
+                            {
+                                line.Append(value);
+                            }
+                            else
+                            {
+                                line.Append(value + COMMA);
+                            }
+                        }
+
+                        writer.WriteLine(line);
+                        writer.Flush();
+                    }
                 }
 
                 return true;

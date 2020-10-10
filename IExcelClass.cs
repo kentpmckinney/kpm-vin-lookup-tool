@@ -77,5 +77,13 @@ namespace VehicleInformationLookupTool
         /// <param name="data"> A DataTable reference </param>
         /// <returns> True or false whether the operation is successful or not </returns>
         bool SaveExcelFile(string saveFileName, DataTable data);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="saveFileName"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        bool SaveCsvFile(string saveFileName, DataTable data);
     }
 }

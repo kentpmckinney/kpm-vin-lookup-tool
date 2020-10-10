@@ -43,6 +43,10 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void ShutdownApplication(object sender, RoutedEventArgs e)
         {
+            /* Cancel download if in progress */
+            this.downloadCancellationSource.Cancel(false);
+
+            /* Perform the shutdown */
             Application.Current.Shutdown();
         }
 
@@ -361,8 +365,8 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page3ResetDefault_Click(object sender, RoutedEventArgs e)
         {
-            page3WebServiceURI.Text = "http://vpic.nhtsa.dot.gov/api/vehicles/decodevinvaluesextended/{VIN}?format=xml";
-            page3DataNodeXpath.Text = "/Response/Results/DecodedVINValues/*";
+            page3WebServiceURI.Text = "http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinExtended/{VIN}?format=xml";
+            page3DataNodeXpath.Text = "/Response/Results/DecodedVariable/*";
         }
 
         /// <summary>
@@ -421,14 +425,17 @@ namespace VehicleInformationLookupTool
             page4Cancel.Content = "Exit";
 
             TaskScheduler scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            
+
+            bool autoCorrect = page2AutoCorrectVinCheckBox.IsChecked.Value;
+            bool discardInvalid = page2DisgardInvalidVinCheckBox.IsChecked.Value;
+
             List<Task> tasks = new List<Task>();
             foreach (string vinNumber in vinList)
             {
                 // Each task added runs in a separate thread 
                 tasks.Add(
                     /* Start a new task to download data for the current VIN number and when done pass the result to the next step */
-                    Task<List<string>>.Factory.StartNew(() => this.web.GetVinDataRow(uri, vinNumber, xpath), this.downloadCancellationToken).ContinueWith(
+                    Task<List<string>>.Factory.StartNew(() => this.web.GetVinDataRow(uri, vinNumber, xpath, autoCorrect, discardInvalid), this.downloadCancellationToken).ContinueWith(
                         (task) =>
                         {
                             // Proceed only if the user has not requested cancellation
@@ -460,16 +467,20 @@ namespace VehicleInformationLookupTool
         {
             /* Ensure that the items in page4datagrid are in the correct order since
             the asynchronous and simultaneous downloading puts them out of order*/
-            if (page1SourceExcelRadioButton.IsChecked == true)
-            {
-                List<string> vinList = this.GetVinList(this.page2DataGrid, page1ColumnComboBox.Text);
-                this.OrderGridViewItems(this.page4DataGrid, page1ColumnComboBox.Text, vinList);
-            }
-            else
-            {
-                List<string> vinList = this.GetVinList(this.page2DataGrid, "VIN");
-                this.OrderGridViewItems(this.page4DataGrid, "VIN", vinList);
-            }
+            //page4DownloadStatus.Text = "Status: Re-ordering Results...";
+            //if (page1SourceExcelRadioButton.IsChecked == true)
+            //{
+            //    List<string> vinList = this.GetVinList(this.page2DataGrid, page1ColumnComboBox.Text);
+            //    this.OrderGridViewItems(this.page4DataGrid, page1ColumnComboBox.Text, vinList);
+            //}
+            //else
+            //{
+            //    List<string> vinList = this.GetVinList(this.page2DataGrid, "VIN");
+            //    this.OrderGridViewItems(this.page4DataGrid, "VIN", vinList);
+            //}
+
+            //Refresh the data view
+            this.page4DataGrid.Items.Refresh();
 
             /* Change the text of the Cancel button at the bottom back to "Cancel" */
             page4Cancel.Content = "Cancel";
@@ -478,6 +489,7 @@ namespace VehicleInformationLookupTool
             page4CancelDownloadButton.IsEnabled = false;
             page4Hint.Visibility = Visibility.Hidden;
             page4Save.IsEnabled = true;
+            page4Previous.IsEnabled = true;
             page4Previous.IsEnabled = true;
             page4DownloadStatus.Text = "Status: Completed";
             page4ClipboardCopyButton.IsEnabled = true;
@@ -490,7 +502,7 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page4CancelDownload_Click(object sender, RoutedEventArgs e)
         {
-            this.downloadCancellationSource.Cancel();
+            this.downloadCancellationSource.Cancel(true);
         }
 
         /// <summary>
@@ -502,14 +514,21 @@ namespace VehicleInformationLookupTool
         {
             StringBuilder clipboardText = new StringBuilder();
             string newline = Environment.NewLine;
-            const string TAB = "\t";
+            const char TAB = '\t';
 
             /* Add a header row to clipboardText */
             {
                 List<string> columnNames = this.GetDataGridColumnNames(page4DataGrid);
                 for (int i = 0; i < columnNames.Count; i++)
                 {
-                    clipboardText.Append(columnNames[i] + TAB);
+                    if (i == columnNames.Count)
+                    {
+                        clipboardText.Append(columnNames[i]);
+                    }
+                    else
+                    {
+                        clipboardText.Append(columnNames[i] + TAB);
+                    }
                 }
 
                 clipboardText.Append(newline);
@@ -519,20 +538,31 @@ namespace VehicleInformationLookupTool
             {
                 int numRows = page4DataGrid.Items.Count;
                 int numColumns = page4DataGrid.Columns.Count;
-                int lastColumn = page4DataGrid.Columns.Count - 1;
+                int lastColumn = numColumns - 1;
 
-                for (int row = 0; row < numRows; row++)
+                for (int r = 0; r < numRows; r++)
                 {
-                    List<string> columnValues = this.GetDataGridRowValues(page4DataGrid, row);
-                    for (int i = 0; i < numColumns; i++)
+                    List<string> columnValues = this.GetDataGridRowValues(page4DataGrid, r);
+
+                    for (int c = 0; c < numColumns; c++)
                     {
-                        if (i == lastColumn)
+                        if (columnValues[c] != null)
                         {
-                            clipboardText.Append(columnValues[i] + newline);
+                            string value = columnValues[c].ToString();
+                            value = value.Replace(TAB, ' ');
+                            
+                            if (c == lastColumn)
+                            {
+                                clipboardText.Append(value + newline);
+                            }
+                            else
+                            {
+                                clipboardText.Append(value + TAB);
+                            }
                         }
                         else
                         {
-                            clipboardText.Append(columnValues[i] + TAB);
+                            clipboardText.Append(TAB);
                         }
                     }
                 }
@@ -618,7 +648,7 @@ namespace VehicleInformationLookupTool
                 }
 
                 DataTable filteredTable = new DataTable();
-                List<string> columnNames = this.GetDataGridColumnNames(page4DataGrid);
+                List<string> columnNames = this.GetDataGridColumnNames(this.page4DataGrid);
 
                 /* Add column headers to the DataTable */
                 {
@@ -645,7 +675,7 @@ namespace VehicleInformationLookupTool
                         DataRow filteredRow = filteredTable.NewRow();
 
                         /* For each column in the source DataGrid via the return value of GetDataGridRowValues */
-                        List<string> dataValues = this.GetDataGridRowValues(page4DataGrid, row);
+                        List<string> dataValues = this.GetDataGridRowValues(this.page4DataGrid, row);
                         for (int i = 0; i < dataValues.Count; i++)
                         {
                             string currentColumnName = columnNames[i];
@@ -667,6 +697,77 @@ namespace VehicleInformationLookupTool
                 }
 
                 bool saveSuccessful = this.excel.SaveExcelFile(saveFileName, filteredTable);
+                if (saveSuccessful)
+                {
+                    page6FileOpenHint.Visibility = Visibility.Hidden;
+                    page7SavedFileTextBox.Text = saveFileName;
+                    this.GoToNextPage(null, null);
+                }
+                else
+                {
+                    page6FileOpenHint.Visibility = Visibility.Visible;
+                }
+            }
+            else if (page6CreateNewCsvFileRadioButton.IsChecked == true)
+            {
+                string saveFileName = page6NewExcelFileTextBox.Text;
+
+                /* Abort if the file name is an empty string */
+                if (string.IsNullOrEmpty(saveFileName))
+                {
+                    return;
+                }
+
+                DataTable filteredTable = new DataTable();
+                List<string> columnNames = this.GetDataGridColumnNames(this.page4DataGrid);
+
+                /* Add column headers to the DataTable */
+                {
+                    for (int i = 0; i < columnNames.Count; i++)
+                    {
+                        string name = columnNames[i];
+                        foreach (CheckBox item in page5ListView.Items)
+                        {
+                            if (item.Content as string == name && item.IsChecked == true)
+                            {
+                                filteredTable.Columns.Add(name);
+                            }
+                        }
+                    }
+                }
+
+                /* Add data rows to the worksheet */
+                {
+                    /* For each row in the source DataGrid */
+                    int numRows = page4DataGrid.Items.Count;
+                    for (int row = 0; row < numRows; row++)
+                    {
+                        int numCheckedColumns = 0;
+                        DataRow filteredRow = filteredTable.NewRow();
+
+                        /* For each column in the source DataGrid via the return value of GetDataGridRowValues */
+                        List<string> dataValues = this.GetDataGridRowValues(this.page4DataGrid, row);
+                        for (int i = 0; i < dataValues.Count; i++)
+                        {
+                            string currentColumnName = columnNames[i];
+
+                            /* Find the currentColumnName in page5ListView */
+                            foreach (CheckBox item in page5ListView.Items)
+                            {
+                                /* If currentColumnName is equal to the current ListView item and the item is checked */
+                                if (item.Content as string == currentColumnName && item.IsChecked == true)
+                                {
+                                    /* Add the value of the data column to filteredRow */
+                                    filteredRow[numCheckedColumns++] = dataValues[i];
+                                }
+                            }
+                        }
+
+                        filteredTable.Rows.Add(filteredRow);
+                    }
+                }
+
+                bool saveSuccessful = this.excel.SaveCsvFile(saveFileName, filteredTable);
                 if (saveSuccessful)
                 {
                     page6FileOpenHint.Visibility = Visibility.Hidden;

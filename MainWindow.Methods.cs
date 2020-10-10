@@ -214,13 +214,28 @@ namespace VehicleInformationLookupTool
         /// <returns> A string that is empty or which contains the name of a file </returns>
         private string PromptSaveExcelFileName()
         {
-            SaveFileDialog dialog = new SaveFileDialog()
+            SaveFileDialog dialog;
+
+            if (page6CreateNewExcelFileRadioButton.IsChecked == true)
             {
-                DefaultExt = ".xlsx",
-                AddExtension = true,
-                OverwritePrompt = true,
-                Filter = "Excel files (*.xlsx;*.xls)|*.xlsx;*.xls|All files (*.*)|*.*"
-            };
+                dialog = new SaveFileDialog()
+                {
+                    DefaultExt = ".xlsx",
+                    AddExtension = true,
+                    OverwritePrompt = true,
+                    Filter = "Excel files (*.xlsx)|*.xlsx" //"Excel files (*.xlsx;*.xls)|*.xlsx;*.xls|All files (*.*)|*.*"
+                };
+            }
+            else
+            {
+                dialog = new SaveFileDialog()
+                {
+                    DefaultExt = ".csv",
+                    AddExtension = true,
+                    OverwritePrompt = true,
+                    Filter = "CSV files (*.csv)|*.csv"
+                };
+            }
 
             /* Display the dialog */
             bool? result = dialog.ShowDialog();
@@ -251,7 +266,7 @@ namespace VehicleInformationLookupTool
             {
                 vinList.Add(row[columnIndex] as string);
             }
-
+            
             return vinList;
         }
 
@@ -282,6 +297,11 @@ namespace VehicleInformationLookupTool
         /// <param name="dataValues"> A string array of values </param>
         private void AddVinRowToDataTable(DataTable table, List<string> dataValues)
         {
+            if (dataValues == null)
+            {
+                return;
+            }
+
             DataRow row = table.NewRow();
             for (int i = 0; i < dataValues.Count; i++)
             {
@@ -318,7 +338,7 @@ namespace VehicleInformationLookupTool
         private List<string> GetDataGridRowValues(DataGrid grid, int rowNumber)
         {
             List<string> dataValues = new List<string>();
-            DataRowView row = (DataRowView)page4DataGrid.Items[rowNumber];
+            DataRowView row = (DataRowView)grid.Items[rowNumber];
 
             for (int i = 0; i < grid.Columns.Count; i++)
             {
@@ -336,6 +356,8 @@ namespace VehicleInformationLookupTool
         /// <param name="orderedStringList"> String list in the correct order </param>
         private void OrderGridViewItems(DataGrid grid, string columnToOrder, List<string> orderedStringList)
         {
+            ////THIS FUNCTION DROPS CORRECTED VIN NUMBERS
+
             /* Create a new DataTable */
             DataTable orderedData = new DataTable();
 
@@ -352,7 +374,7 @@ namespace VehicleInformationLookupTool
             {
                 foreach (DataRowView row in grid.Items)
                 {
-                    if (orderedVinNumber == row[columnIndex].ToString())
+                    if (orderedVinNumber == row[columnIndex] as string)
                     {
                         orderedData.ImportRow(row.Row);
                         break;

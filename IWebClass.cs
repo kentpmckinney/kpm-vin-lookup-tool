@@ -36,7 +36,7 @@ namespace VehicleInformationLookupTool
         /// <param name="vin"> The vehicle's VIN number </param>
         /// <param name="xpath"> Specifies what nodes to retrieve from the XML response </param>
         /// <returns> A string list with the column values for the specified vin number </returns>
-        List<string> GetVinDataRow(string uri, string vin, string xpath);
+        List<string> GetVinDataRow(string uri, string vin, string xpath, bool autoCorrect, bool discardInvalid);
 
         /// <summary>
         /// Check for Internet access

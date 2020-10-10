@@ -1,3 +1,4 @@
+using System.Resources;
 //-----------------------------------------------------------------------
 // <copyright file="AssemblyInfo.cs" company="N/A">
 //     Copyright (c) 2016 Kent P. McKinney
@@ -17,7 +18,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("N/A")]
 [assembly: AssemblyProduct("VehicleInformationLookupTool")]
-[assembly: AssemblyCopyright("Copyright ©  2016 Kent P. McKinney")]
+[assembly: AssemblyCopyright("Copyright ©  2016, 2020 Kent P. McKinney")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -49,5 +50,6 @@ using System.Windows;
 //      Minor Version 
 //      Build Number
 //      Revision
-[assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.*")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: NeutralResourcesLanguage("en-US")]

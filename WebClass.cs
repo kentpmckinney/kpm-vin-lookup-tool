@@ -10,6 +10,7 @@ namespace VehicleInformationLookupTool
     using System.Collections.Generic;
     using System.IO;
     using System.Net;
+    using System.Windows;
     using System.Xml;
 
     /// <summary>
@@ -39,7 +40,7 @@ namespace VehicleInformationLookupTool
             xmlDoc.LoadXml(rawXmlString);
             XmlNodeList messageNode = xmlDoc.SelectNodes(@"//Message");
 
-            return messageNode[0].InnerText == "Results returned successfully";
+            return messageNode[0].InnerText.StartsWith("Results returned successfully");
         }
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace VehicleInformationLookupTool
         /// <param name="vin"> The vehicle's VIN number </param>
         /// <param name="xpath"> Specifies what nodes to retrieve from the XML response </param>
         /// <returns> A string list with the column values for the specified vin number </returns>
-        public List<string> GetVinDataRow(string uri, string vin, string xpath)
+        public List<string> GetVinDataRow(string uri, string vin, string xpath, bool autoCorrect, bool discardInvalid)
         {
             /* This method is called from an alternate thread */
 
@@ -65,12 +66,53 @@ namespace VehicleInformationLookupTool
             xmlDoc.LoadXml(rawXmlString);
             XmlNodeList nodes = xmlDoc.SelectNodes(xpath);
 
+            XmlNodeList messageNode = xmlDoc.SelectNodes(@"//Message");
+            string message = messageNode[0]?.InnerText ?? "";
+
+            XmlNodeList errorNode = xmlDoc.SelectNodes(@"//ErrorCode");
+            string error = "";
+            if (errorNode[0] != null && errorNode[0].InnerText != null)
+            {
+                error = errorNode[0].InnerText;
+            }
+
+            XmlNodeList suggestedVinNode = xmlDoc.SelectNodes(@"//SuggestedVIN");
+            string suggestedVin = "";
+            if (suggestedVinNode[0] != null && suggestedVinNode[0].InnerText != null)
+            {
+                suggestedVin = suggestedVinNode[0].InnerText;
+            }
+
+            /* Logic to auto-correct VIN number */
+            bool vinWasAutoCorrected = false;
+            if (autoCorrect)
+            {
+                if (error.StartsWith("2") || error.StartsWith("3") || error.StartsWith("4"))
+                {
+                    XmlNodeList vinNode = xmlDoc.SelectNodes(@"//VIN");
+                    vinNode[0].InnerText = suggestedVin;
+                    vinWasAutoCorrected = true;
+                }
+            }
+
+            /* Logic to discard invalid VIN data */
+            if (discardInvalid)
+            {
+                if ((message == "Invalid URL") || error.StartsWith("11"))
+                {
+                    return null;
+                }
+            }
+
             List<string> vinItems = new List<string>();
             for (int i = 0; i < nodes.Count; i++)
             {
                 vinItems.Add(nodes[i].InnerText);
             }
-            
+
+            vinItems.Add(message);
+            vinItems.Add(vinWasAutoCorrected.ToString());
+
             return vinItems;
         }
 
@@ -102,6 +144,9 @@ namespace VehicleInformationLookupTool
             {
                 headerList.Add(nodes[i].Name);
             }
+
+            headerList.Add("MessageFromServer");
+            headerList.Add("AutoCorrectedVIN");
 
             return headerList;
         }
