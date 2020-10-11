@@ -62,8 +62,17 @@ namespace VehicleInformationLookupTool
             var rawXmlString = default(string);
             using (var web = new WebClient())
             {
-                rawXmlString = web.DownloadString(vinUri);
+                try
+                {
+                    rawXmlString = web.DownloadString(vinUri);
+                }
+                catch (WebException)
+                {
+                    ;
+                }
             }
+            if (rawXmlString is null)
+                return new List<string>();
 
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(rawXmlString);
@@ -86,7 +95,7 @@ namespace VehicleInformationLookupTool
                 if (error.StartsWith("2") || error.StartsWith("3") || error.StartsWith("4"))
                 {
                     var vinNode = xmlDoc.SelectNodes(@"//VIN");
-                    if (vinNode is null)
+                    if (vinNode != null)
                     {
                         vinNode[0].InnerText = suggestedVin;
                         vinWasAutoCorrected = true;
@@ -104,7 +113,7 @@ namespace VehicleInformationLookupTool
                 }
             }
             
-            var vinItems = (from XmlNode node in nodes select node?["Value"]?.InnerText).ToList();
+            var vinItems = (from XmlNode node in nodes select node?.InnerText).ToList();
             vinItems.Add(message);
             vinItems.Add(vinWasAutoCorrected.ToString());
 
@@ -140,7 +149,7 @@ namespace VehicleInformationLookupTool
             var headerList = new List<string>();
             foreach (XmlNode node in nodes)
             {
-                var columnName = node?["Variable"]?.FirstChild.InnerText ?? "";
+                var columnName = node?.Name ?? "";
                 headerList.Add(columnName);
             }
             headerList.Add("MessageFromServer");

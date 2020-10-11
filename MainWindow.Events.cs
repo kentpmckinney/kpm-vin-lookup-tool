@@ -352,8 +352,9 @@ namespace VehicleInformationLookupTool
         /// <param name="e"> Event arguments </param>
         private void Page3ResetDefault_Click(object sender, RoutedEventArgs e)
         {
-            Page3WebServiceUri.Text = "http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinExtended/{VIN}?format=xml";
-            Page3DataNodeXpath.Text = "/Response/Results/*";
+            Page3WebServiceUri.Text = "http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/{VIN}?format=xml";
+            Page3DataNodeXpath.Text = "/Response/Results/DecodedVINValues/*";
+            // test: https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/5UXWX7C5*BA?format=xml
         }
 
         /// <summary>
@@ -410,32 +411,34 @@ namespace VehicleInformationLookupTool
             var autoCorrect = Page2AutoCorrectVinCheckBox?.IsChecked == true;
             var discardInvalid = Page2DiscardInvalidVinCheckBox?.IsChecked == true;
 
-            var tasks = new List<Task>();
-            foreach (var vinNumber in vinList)
+            using (var concurrencySemaphore = new SemaphoreSlim(1, 4))
             {
-                // Each task added runs in a separate thread 
-                tasks.Add(
-                    /* Start a new task to download data for the current VIN number and when done pass the result to the next step */
-                    Task<List<string>>.Factory
-                        .StartNew(() => _web
-                        .GetVinDataRow(uri, vinNumber, xpath, autoCorrect, discardInvalid), _downloadCancellationToken)
-                        .ContinueWith((task) =>
-                        {
-                            // Proceed only if the user has not requested cancellation
-                            if (_downloadCancellationToken.IsCancellationRequested == false)
+                var tasks = new List<Task>();
+                foreach (var vinNumber in vinList)
+                {
+                    // Each task added runs in a separate thread 
+                    tasks.Add(
+                        /* Start a new task to download data for the current VIN number and when done pass the result to the next step */
+                        Task<List<string>>.Factory
+                            .StartNew(() => _web.GetVinDataRow(uri, vinNumber, xpath, autoCorrect, discardInvalid), _downloadCancellationToken)
+                            .ContinueWith((task) =>
                             {
-                                AddVinRowToDataTable(_vinData, task.Result);
-                                Page4ProgressBar.Value++;
-                            }
-                        }, _downloadCancellationToken, TaskContinuationOptions.PreferFairness, scheduler));
-            }
+                                // Proceed only if the user has not requested cancellation
+                                if (_downloadCancellationToken.IsCancellationRequested == false)
+                                {
+                                    AddVinRowToDataTable(_vinData, task.Result);
+                                    Page4ProgressBar.Value++;
+                                }
+                            }, _downloadCancellationToken, TaskContinuationOptions.PreferFairness, scheduler));
+                }
 
-            /* Update the user interface when all tasks have completed
-            (Creates a new cancellation token so that it runs even if the user clicks cancel) */ 
-            Task.Factory.ContinueWhenAll(
-                tasks.ToArray(),
-                t => UpdateUserInterfaceDownloadComplete(),
-                new CancellationToken(), TaskContinuationOptions.PreferFairness, scheduler);
+                /* Update the user interface when all tasks have completed
+                (Creates a new cancellation token so that it runs even if the user clicks cancel) */
+                Task.Factory.ContinueWhenAll(
+                    tasks.ToArray(),
+                    t => UpdateUserInterfaceDownloadComplete(),
+                    new CancellationToken(), TaskContinuationOptions.PreferFairness, scheduler);
+            }
         }
 
         /// <summary>

@@ -259,12 +259,15 @@ namespace VehicleInformationLookupTool
                 return;
 
             var row = table.NewRow();
-            for (var i = 0; i < dataValues.Count; i++)
+            if (row.Table.Columns.Count == dataValues.Count)
             {
-                row[i] = dataValues[i];
-            }
+                for (var i = 0; i < row.Table.Columns.Count; i++)
+                {
+                    row[i] = dataValues[i] ?? "";
+                }
 
-            table.Rows.Add(row);
+                table.Rows.Add(row);
+            }
         }
 
         /// <summary>

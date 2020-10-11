@@ -130,9 +130,9 @@
                     <Expander Canvas.Left="110" Canvas.Top="161" Width="753" Height="235" Header="Configuration" Padding="5">
                         <Canvas>
                             <TextBlock Canvas.Left="56" Canvas.Top="10" FontWeight="Bold" Foreground="DarkBlue" Text="Web Service URI:" />
-                            <TextBox x:Name="Page3WebServiceUri" Canvas.Left="56" Canvas.Top="31" Width="529" Text="http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinExtended/{VIN}?format=xml" />
+                            <TextBox x:Name="Page3WebServiceUri" Canvas.Left="56" Canvas.Top="31" Width="529" Text="http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/{VIN}?format=xml" />
                             <TextBlock Canvas.Left="56" Canvas.Top="94" FontWeight="Bold" Foreground="DarkBlue" Text="Data Node xpath:" />
-                            <TextBox x:Name="Page3DataNodeXpath" Canvas.Left="56" Canvas.Top="115" Width="521" Text="/Response/Results/*" />
+                            <TextBox x:Name="Page3DataNodeXpath" Canvas.Left="56" Canvas.Top="115" Width="521" Text="/Response/Results/DecodedVINValues/*" />
                             <Button x:Name="Page3ResetDefault" Canvas.Left="56" Canvas.Top="156" Width="149" Margin="0" Click="Page3ResetDefault_Click" Content="Reset to Default Values" />
                             <TextBlock Canvas.Left="71" Canvas.Top="49" FontStyle="Italic" Foreground="DarkBlue" Text="Please note that currently this application only supports XML responses" />
                         </Canvas>

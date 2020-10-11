@@ -51,7 +51,6 @@ namespace VehicleInformationLookupTool
             // Data initialization for MainWindow
             _downloadCancellationToken = _downloadCancellationSource.Token;
 
-            // Increase the maximum number of HTTP connections (the default is 2)
             ServicePointManager.DefaultConnectionLimit = 4;
             ServicePointManager.Expect100Continue = true;
 
