@@ -1,11 +1,12 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="MainWindow.Methods.cs" company="N/A">
+// <copyright file="MainWindow.Methods.cs">
 //     Copyright (c) 2016, 2020 Kent P. McKinney
 //     Released under the terms of the MIT License
 // </copyright>
 //-----------------------------------------------------------------------
 
 using System.Linq;
+using System.Text;
 
 namespace VehicleInformationLookupTool
 {
@@ -16,16 +17,8 @@ namespace VehicleInformationLookupTool
     using System.Windows;
     using System.Windows.Controls;
     using Microsoft.Win32;
-
-    /// <summary>
-    /// Helper methods for MainWindow
-    /// </summary>
     public partial class MainWindow
     {
-        /// <summary>
-        /// Opens the default _web browser to the specified site
-        /// </summary>
-        /// <param name="site"> The _web site address </param>
         private static void LaunchWebBrowser(string site)
         {
             try
@@ -34,22 +27,18 @@ namespace VehicleInformationLookupTool
             }
             catch (Exception)
             {
-                var message = "Unable to open the site in a _web browser automatically.";
-                message += " Please visit the following _web page manually:\n\n" + site;
-                message += "\n\nPossible Causes:\n";
-                message += "   This application cannot access the Internet\n";
-                message += "   The _web page has moved to a different location\n";
-                message += "   Configuration setting or problem with the operating system\n";
-                MessageBox.Show(message);
+                var message = new StringBuilder("Unable to open the site in a _web browser automatically.");
+                message.Append(" Please visit the following _web page manually:\n\n" + site);
+                message.Append("\n\nPossible Causes:\n");
+                message.Append("   This application cannot access the Internet\n");
+                message.Append("   The _web page has moved to a different location\n");
+                message.Append("   Configuration setting or problem with the operating system\n");
+                MessageBox.Show(message.ToString());
             }
         }
 
-        /// <summary>
-        /// Consumes the contents of the text box containing VINs converting it to a more usable form
-        /// </summary>
-        /// <param name="textContainingVINs"> Raw text input </param>
-        /// <returns> A DataTable with the VINs in a single column </returns>
-        private static DataTable VinTextToDataTable(string textContainingVins)
+
+        private static DataTable VinTextToDataTable(ref string textContainingVins)
         {
             /*
               Requirement: the user must only use commas, semicolons, and newlines to delineate VINs (as indicated in the UI)
@@ -76,7 +65,7 @@ namespace VehicleInformationLookupTool
             /* Add rows */
             foreach (var vin in vinList)
             {
-                if (!string.IsNullOrEmpty(vin))
+                if (!string.IsNullOrWhiteSpace(vin))
                 {
                     table.Rows.Add(vin);
                 }
@@ -85,11 +74,8 @@ namespace VehicleInformationLookupTool
             return table;
         }
 
-        /// <summary>
-        /// Checks the registry to see if this is the first time that the program has run in the current user context
-        /// </summary>
-        /// <returns> True or false </returns>
-        private bool IsFirstRun()
+
+        private static bool IsFirstRun()
         {
             if (ReadRegistryString("FirstRun") == "False")
             {
@@ -100,25 +86,15 @@ namespace VehicleInformationLookupTool
             return true;
         }
 
-        /// <summary>
-        /// Reads the registry value that indicates whether the user has agreed to the EULA
-        /// </summary>
-        /// <returns> True or false </returns>
-        private bool UserHasAgreedToEula() => 
+
+        private static bool UserHasAgreedToEula() => 
             ReadRegistryString("AgreedEULA") == true.ToString();
         
-        /// <summary>
-        /// Writes the registry value to indicate whether the user has agreed to the EULA
-        /// </summary>
-        /// <param name="state"> True or false </param>
-        private void SetUserAgreedToEula(bool state) =>
+
+        private static void SetUserAgreedToEula(bool state) =>
             WriteRegistryString("AgreedEULA", state.ToString());
         
-        /// <summary>
-        /// Reads a string value from the registry key HKCU\SOFTWARE\VehicleInformationLookupTool
-        /// </summary>
-        /// <param name="valueName"> The name of the registry value </param>
-        /// <returns> A string that is empty or which contains the specified registry value </returns>
+
         private static string ReadRegistryString(string valueName)
         {
             try
@@ -126,12 +102,13 @@ namespace VehicleInformationLookupTool
                 /* Attempt to open the key HKCU\SOFTWARE\VehicleInformationLookupTool */
                 var hkcu = Registry.CurrentUser;
                 var software = hkcu?.OpenSubKey("SOFTWARE", RegistryKeyPermissionCheck.ReadWriteSubTree);
-                var key = software?.OpenSubKey("VehicleInformationLookupTool", RegistryKeyPermissionCheck.ReadWriteSubTree);
+                var key = software?.OpenSubKey("VehicleInformationLookupTool",
+                    RegistryKeyPermissionCheck.ReadWriteSubTree);
 
                 /* Attempt to get the named value */
                 var valueString = key?.GetValue(valueName) as string ?? string.Empty;
-
                 key?.Close();
+
                 return valueString;
             }
             catch (Exception)
@@ -140,11 +117,7 @@ namespace VehicleInformationLookupTool
             }
         }
 
-        /// <summary>
-        /// Writes a string value to the registry key {HKCU\SOFTWARE\VehicleInformationLookupTool}\valueName
-        /// </summary>
-        /// <param name="valueName"> The name of the registry value </param>
-        /// <param name="valueString"> The string value </param>
+
         private static void WriteRegistryString(string valueName, string valueString)
         {
             try
@@ -152,26 +125,24 @@ namespace VehicleInformationLookupTool
                 /* Attempt to open the key HKCU\SOFTWARE\VehicleInformationLookupTool */
                 var hkcu = Registry.CurrentUser;
                 var software = hkcu?.OpenSubKey("SOFTWARE", RegistryKeyPermissionCheck.ReadWriteSubTree);
-                var key = software?.OpenSubKey("VehicleInformationLookupTool", RegistryKeyPermissionCheck.ReadWriteSubTree);
+                var key = software?.OpenSubKey("VehicleInformationLookupTool",
+                    RegistryKeyPermissionCheck.ReadWriteSubTree);
 
                 /* If the key was not found attempt to create it */
                 if (key is null)
                 {
-                    key = software?.CreateSubKey("VehicleInformationLookupTool"); 
+                    key = software?.CreateSubKey("VehicleInformationLookupTool");
                     key?.SetValue(valueName, valueString);
                     key?.Close();
                 }
             }
             catch (Exception)
             {
-                ; // Do nothing
+                /* Ignore */
             }
         }
 
-        /// <summary>
-        /// Prompts the user for the name of an Excel file to open
-        /// </summary>
-        /// <returns> A string that is empty or which contains the name of a file </returns>
+
         private static string PromptOpenExcelFileName()
         {
             var dialog = new OpenFileDialog()
@@ -186,10 +157,7 @@ namespace VehicleInformationLookupTool
                 : string.Empty;
         }
 
-        /// <summary>
-        /// Prompts the user for the name of an Excel file to which to save data
-        /// </summary>
-        /// <returns> A string that is empty or which contains the name of a file </returns>
+
         private string PromptSaveExcelFileName()
         {
             var dialog = Page6CreateNewExcelFileRadioButton.IsChecked == true
@@ -214,28 +182,24 @@ namespace VehicleInformationLookupTool
                 : string.Empty;
         }
 
-        /// <summary>
-        /// Extract a list of vin numbers from a DataGrid
-        /// </summary>
-        /// <param name="grid"> A reference to the source DataGrid </param>
-        /// <param name="columnName"> The name of the source column </param>
-        /// <returns> String array containing vin numbers </returns>
+
         private static List<string> GetVinList(in DataGrid grid, string columnName)
         {
+            grid.ThrowIfNullOrEmpty();
+            columnName.ThrowIfNullOrEmpty();
+
             var columnIndex = GetDataGridColumnIndex(grid, columnName);
             var rows = grid.ItemsSource;
 
             return (from DataRowView row in rows select row[columnIndex] as string).ToList();
         }
 
-        /// <summary>
-        /// Get the index of a DataGrid column given the column's string name
-        /// </summary>
-        /// <param name="grid"> A reference to the source DataGrid </param>
-        /// <param name="columnName"> The name of the source column </param>
-        /// <returns> Column index </returns>
+
         private static int GetDataGridColumnIndex(in DataGrid grid, string columnName)
         {
+            grid.ThrowIfNullOrEmpty();
+            columnName.ThrowIfNullOrEmpty();
+
             for (var i = 0; i < grid.Columns.Count; i++)
             {
                 var columnHeader = grid.Columns[i].Header as string;
@@ -248,65 +212,58 @@ namespace VehicleInformationLookupTool
             return 0;
         }
 
-        /// <summary>
-        /// Add a row of vin data values to a DataTable
-        /// </summary>
-        /// <param name="table"> A reference to the target DataTable </param>
-        /// <param name="dataValues"> A string array of values </param>
+
         private static void AddVinRowToDataTable(in DataTable table, in List<string> dataValues)
         {
-            if (table is null || dataValues is null)
-                return;
+            table.ThrowIfNullOrEmpty();
+            dataValues.ThrowIfNullOrEmpty();
 
             var row = table.NewRow();
-            if (row.Table.Columns.Count == dataValues.Count)
+            if (row.Table.Columns.Count != dataValues.Count)
             {
-                for (var i = 0; i < row.Table.Columns.Count; i++)
-                {
-                    row[i] = dataValues[i] ?? "";
-                }
-
-                table.Rows.Add(row);
+                return;
             }
+
+            for (var i = 0; i < row.Table.Columns.Count; i++)
+            {
+                row[i] = dataValues[i] ?? string.Empty;
+            }
+
+            table.Rows.Add(row);
         }
 
-        /// <summary>
-        /// Get the column headers of a DataGrid
-        /// </summary>
-        /// <param name="datagrid"> A reference to the source DataGrid </param>
-        /// <returns> String array </returns>
-        private static List<string> GetDataGridColumnNames(in DataGrid datagrid) =>
-            datagrid?.Columns.Select(column => column.Header.ToString()).ToList();
 
-        /// <summary>
-        /// Get the data values in a DataGrid at the specified row
-        /// </summary>
-        /// <param name="datagrid"> A reference to the source DataGrid </param>
-        /// <param name="rowNumber"> Index of the row </param>
-        /// <returns> String array containing data values </returns>
+        private static List<string> GetDataGridColumnNames(in DataGrid datagrid)
+        {
+            datagrid.ThrowIfNullOrEmpty();
+
+            return datagrid.Columns.Select(column => column.Header.ToString()).ToList();
+        }
+
+
         private static List<string> GetDataGridRowValues(in DataGrid datagrid, int rowNumber)
         {
-            var dataValues = new List<string>();
-            var row = datagrid?.Items[rowNumber] as DataRowView;
+            datagrid.ThrowIfNullOrEmpty();
 
-            for (var i = 0; i < datagrid?.Columns.Count; i++)
+            var dataValues = new List<string>();
+            var row = datagrid.Items[rowNumber] as DataRowView;
+
+            if (row == null)
             {
-                dataValues.Add(row?[i] as string);
+                return new List<string>();
+            }
+
+            for (var i = 0; i < datagrid.Columns.Count; i++)
+            {
+                dataValues.Add(row[i] as string);
             }
 
             return dataValues;
         }
 
-        /// <summary>
-        /// Ensure that the order of items in the DataGrid follows the specified list
-        /// </summary>
-        /// <param name="datagrid"> Source DataGrid reference </param>
-        /// <param name="columnToOrder"> Source column name </param>
-        /// <param name="orderedStringList"> String list in the correct order </param>
-        private void OrderGridViewItems(in DataGrid datagrid, string columnToOrder, in List<string> orderedStringList)
-        {
-            ////THIS FUNCTION DROPS CORRECTED VIN NUMBERS
 
+        private static void OrderGridViewItems(in DataGrid datagrid, string columnToOrder, in List<string> orderedStringList)
+        {
             /* Create a new DataTable */
             var orderedData = new DataTable();
 
@@ -323,7 +280,9 @@ namespace VehicleInformationLookupTool
             {
                 foreach (DataRowView row in datagrid.Items)
                 {
-                    if (orderedVinNumber == row[columnIndex] as string)
+                    var vinValue = row[columnIndex].ToString().ToLower();
+                    var originalVin = row["OriginalVIN"].ToString().ToLower();
+                    if (orderedVinNumber.ToLower() == vinValue || orderedVinNumber.ToLower() == originalVin)
                     {
                         orderedData.ImportRow(row.Row);
                         break;

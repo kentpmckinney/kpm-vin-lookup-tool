@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="ExcelClass.cs" company="N/A">
+// <copyright file="ExcelClass.cs">
 //     Copyright (c) 2016, 2020 Kent P. McKinney
 //     Released under the terms of the MIT License
 // </copyright>
@@ -19,37 +19,19 @@ namespace VehicleInformationLookupTool
     using System.Text;
     using ExcelDataReader;
 
-    /// <summary>
-    /// Encapsulates Excel functionality
-    /// </summary>
+
     public class ExcelClass : IExcelClass, IDisposable
     {
-        /// <summary>
-        /// Typical names of columns in an Excel worksheet which would likely contain VIN numbers
-        /// </summary>
-        /// <remarks>
-        /// Not case sensitive
-        /// </remarks>
+
         private static readonly List<string> VinIndicators = new List<string> { "vin", "vehicleidentificationnumber" };
 
-        /// <summary>
-        /// Instance of the third-party class used to read Excel files
-        /// </summary>
         private IExcelDataReader _excelDataReader;
 
-        /// <summary>
-        /// Instance of the class which allows access to the Excel file itself
-        /// </summary>
         private FileStream _fileStream;
 
-        /// <summary>
-        /// Instance of a DataSet that the IExcelDataReader class transfers _data to
-        /// </summary>
         private DataSet _data;
 
-        /// <summary>
-        /// Properly dispose of _data
-        /// </summary>
+
         public void Dispose()
         {
             _excelDataReader?.Dispose();
@@ -62,52 +44,34 @@ namespace VehicleInformationLookupTool
             _data = null;
         }
 
-        /// <summary>
-        /// Close the currently open file
-        /// </summary>
+
         public void CloseFile()
         {
             _excelDataReader?.Close();
             _fileStream?.Close();
         }
 
-        /// <summary>
-        /// Clear stored _data
-        /// </summary>
+
         public void ClearData() =>
             _data?.Clear();
+
+
+        public List<string> GetColumnNames(string sheetName)
+        {
+            sheetName.ThrowIfNullOrEmpty();
+
+            return (from DataTable table in _data.Tables where table.TableName == sheetName from DataColumn column in table.Columns select column.ColumnName).ToList();
+        }
         
-        /// <summary>
-        /// Get a list of column names given the name of a worksheet
-        /// </summary>
-        /// <param name="sheetName"> The name of the worksheet </param>
-        /// <returns> A string array of column names </returns>
-        public List<string> GetColumnNames(string sheetName) =>
-            (from DataTable table in _data.Tables where table.TableName == sheetName from DataColumn column in table.Columns select column.ColumnName).ToList();
-        
-        /// <summary>
-        /// Get a list of sheet names in the currently open file
-        /// </summary>
-        /// <returns> A string array of worksheet names </returns>
+
         public List<string> GetSheetNames() => 
             (from DataTable table in _data.Tables select table.TableName).ToList();
 
-        /// <summary>
-        /// Indicates whether the Excel file is valid or not
-        /// </summary>
-        /// <returns> A boolean indicating whether the file is valid </returns>
-        public bool IsValidFile()
-        {
-            //_excelDataReader.IsValid == true;
-            return true;
-        }
 
-        /// <summary>
-        /// Opens an Excel file
-        /// </summary>
-        /// <param name="fileName"> The file name </param>
         public void OpenFile(string fileName)
         {
+            fileName.ThrowIfNullOrEmpty();
+
             if (!File.Exists(fileName))
             {
                 MessageBox.Show(fileName, "File Not Found");
@@ -121,7 +85,7 @@ namespace VehicleInformationLookupTool
                 switch (Path.GetExtension(fileName).ToLower())
                 {
                     case (".xls"):
-                        _excelDataReader = ExcelReaderFactory.CreateBinaryReader(_fileStream); //ReadOption.Loose
+                        _excelDataReader = ExcelReaderFactory.CreateBinaryReader(_fileStream);
                         break;
                     case (".xlsx"):
                         _excelDataReader = ExcelReaderFactory.CreateOpenXmlReader(_fileStream);
@@ -148,23 +112,18 @@ namespace VehicleInformationLookupTool
             }
         }
 
-        /// <summary>
-        /// Get a DataTable object given the index number of a worksheet
-        /// </summary>
-        /// <param name="worksheetIndex"> The index number of the worksheet </param>
-        /// <returns> The DataTable with _data for the specified worksheet </returns>
-        public DataTable GetDataTable(int worksheetIndex) =>
-            _data.Tables[worksheetIndex];
+
+        public DataTable GetDataTable(int worksheetIndex)
+        {
+            worksheetIndex.ThrowIfNullOrEmpty();
+
+            return _data.Tables[worksheetIndex];
+        }
+            
         
-        /// <summary>
-        /// Get a worksheet in the loaded file that heuristically seems to contain a column with VIN numbers
-        /// </summary>
-        /// <returns> The index of the worksheet </returns>
+
         public int SheetLikelyToContainVins()
         {
-            if (!IsValidFile())
-                return 0;
-
             var sheets = GetSheetNames();
             for (var i = 0; i < sheets.Count; i++)
             {
@@ -178,13 +137,11 @@ namespace VehicleInformationLookupTool
             return 0;
         }
 
-        /// <summary>
-        /// Get a column within a worksheet that heuristically seems to contain VIN numbers
-        /// </summary>
-        /// <param name="sheetName"> The name of the worksheet </param>
-        /// <returns> The index of the column </returns>
+
         public int ColumnLikelyToContainVins(string sheetName)
         {
+            sheetName.ThrowIfNullOrEmpty();
+
             var columnNames = this.GetColumnNames(sheetName);
             for (var i = 0; i < columnNames.Count; i++)
             {
@@ -197,29 +154,19 @@ namespace VehicleInformationLookupTool
             return 0;
         }
 
-        /// <summary>
-        /// Save _data to an Excel file
-        /// </summary>
-        /// <param name="saveFileName"> The name of the file </param>
-        /// <param name="data"> A DataTable reference </param>
-        /// <returns> True or false whether the operation is successful or not </returns>
-        public bool SaveExcelFile(string saveFileName, DataTable data)
+
+        public bool SaveExcelFile(string saveFileName, in DataTable data)
         {
+            saveFileName.ThrowIfNullOrEmpty();
+            data.ThrowIfNullOrEmpty();
+
             try
             {
-                /* Use EPPlus to save the Excel file */
                 using (var excel = new ExcelPackage(new FileInfo(saveFileName)))
                 {
-                    /* add a worksheet */
                     var worksheet = excel.Workbook.Worksheets.Add("Vehicle Information Lookup Tool");
-
-                    /* Load datatable into the worksheet */
                     worksheet.SelectedRange.LoadFromDataTable(data, true);
-
-                    /* Autofit columns for all cells */
                     worksheet.Cells.AutoFitColumns(0);
-
-                    /* Save the file */
                     excel.Save();
                 }
 
@@ -231,14 +178,12 @@ namespace VehicleInformationLookupTool
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="saveFileName"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public bool SaveCsvFile(string saveFileName, DataTable data)
+
+        public bool SaveCsvFile(string saveFileName, in DataTable data)
         {
+            saveFileName.ThrowIfNullOrEmpty();
+            data.ThrowIfNullOrEmpty();
+
             try
             {
                 using (var writer = new StreamWriter(saveFileName))

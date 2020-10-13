@@ -98,6 +98,7 @@
     </ApplicationDefinition>
     <Compile Include="HelpClass.cs" />
     <Compile Include="MainWindow.Events.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="WebClass.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -5,27 +5,15 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System;
 using System.Linq;
-using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Net;
+using System.Xml;
 
 namespace VehicleInformationLookupTool
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Net;
-    using System.Xml;
-
-    /// <summary>
-    /// Encapsulates web access
-    /// </summary>
     public class WebClass : IWebClass
     {
-        /// <summary>
-        /// Determines whether the NHTSA web service at the provided uri is working
-        /// </summary>
-        /// <param name="uri"> The fully-qualified location of the web service </param>
-        /// <returns> A boolean that if true means the web service is working properly </returns>
         public bool NhtsaServiceIsWorking(string uri)
         {
             /* This method assumes that it should get XML results with a Message node in it */
@@ -46,18 +34,12 @@ namespace VehicleInformationLookupTool
             return messageNode != null && messageNode[0].InnerText.StartsWith("Results returned successfully");
         }
 
-        /// <summary>
-        /// Gets a single row of data for the specified vin
-        /// </summary>
-        /// <param name="uri"> The fully-qualified location of the web service </param>
-        /// <param name="vin"> The vehicle's VIN number </param>
-        /// <param name="xpath"> Specifies what nodes to retrieve from the XML response </param>
-        /// <returns> A string list with the column values for the specified vin number </returns>
-        public List<string> GetVinDataRow(string uri, string vin, string xpath, bool autoCorrect, bool discardInvalid)
+
+        public List<string> GetVinDataRow(string uri, string lookupVin, string xpath, bool autoCorrect, bool discardInvalid)
         {
             /* This method is called from an alternate thread */
 
-            var vinUri = uri.Replace("{VIN}", vin);
+            var vinUri = uri.Replace("{VIN}", lookupVin);
 
             var rawXmlString = default(string);
             using (var web = new WebClient())
@@ -79,53 +61,48 @@ namespace VehicleInformationLookupTool
             var nodes = xmlDoc.SelectNodes(xpath);
 
             var messageNode = xmlDoc.SelectNodes(@"//Message");
-            var message = messageNode?[0]?.InnerText ?? "";
+            var message = messageNode?[0]?.InnerText ?? string.Empty;
 
             var errorNode = xmlDoc.SelectNodes(@"//ErrorCode");
-            var error = errorNode?[0]?.InnerText ?? "";
+            var error = errorNode?[0]?.InnerText ?? string.Empty;
             
             var suggestedVinNode = xmlDoc.SelectNodes(@"//SuggestedVIN");
-            var suggestedVin = suggestedVinNode?[0]?.InnerText ?? "";
+            var suggestedVin = suggestedVinNode?[0]?.InnerText ?? string.Empty;
+
+            var vinNode = xmlDoc.SelectNodes(@"//VIN");
+            var vin = vinNode?[0]?.InnerText ?? string.Empty;
 
             /* Logic to auto-correct VIN number */
-            // TODO: DOUBLE CHECK THIS
             var vinWasAutoCorrected = false;
+            var originalVin = string.Empty;
             if (autoCorrect)
             {
-                if (error.StartsWith("2") || error.StartsWith("3") || error.StartsWith("4"))
+                if (vinNode != null && !string.IsNullOrWhiteSpace(suggestedVin))
                 {
-                    var vinNode = xmlDoc.SelectNodes(@"//VIN");
-                    if (vinNode != null)
-                    {
-                        vinNode[0].InnerText = suggestedVin;
-                        vinWasAutoCorrected = true;
-                    }
+                    originalVin = vin;
+                    vinNode[0].InnerText = suggestedVin;
+                    vinWasAutoCorrected = true;
                 }
             }
 
             /* Logic to discard invalid VIN data */
-            // TODO: double check this logic
             if (discardInvalid)
             {
                 if (message == "Invalid URL" || error.StartsWith("11"))
                 {
-                    return null;
+                    return new List<string>() { "Discarded" };
                 }
             }
             
             var vinItems = (from XmlNode node in nodes select node?.InnerText).ToList();
             vinItems.Add(message);
             vinItems.Add(vinWasAutoCorrected.ToString());
+            vinItems.Add(originalVin);
 
             return vinItems;
         }
 
-        /// <summary>
-        /// Gets a list of column headers for vin data
-        /// </summary>
-        /// <param name="uri"> The fully-qualified location of the web service </param>
-        /// <param name="xpath"> Specifies what nodes to retrieve from the XML response </param>
-        /// <returns> A string list with column header text for the items of vin data returned </returns>
+
         public List<string> GetVinColumnHeaders(string uri, string xpath)
         {
             /* This method assumes that header fields are the same for all results */
@@ -154,14 +131,12 @@ namespace VehicleInformationLookupTool
             }
             headerList.Add("MessageFromServer");
             headerList.Add("AutoCorrectedVIN");
+            headerList.Add("OriginalVIN");
 
             return headerList;
         }
 
-        /// <summary>
-        /// Check for Internet access
-        /// </summary>
-        /// <returns> A boolean value indicating whether www.google.com is reachable </returns>
+        
         public bool IsConnectedToInternet()
         {
             try
