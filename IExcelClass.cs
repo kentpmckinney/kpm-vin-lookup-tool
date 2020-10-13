@@ -5,11 +5,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Data;
+
 namespace VehicleInformationLookupTool
 {
-    using System.Collections.Generic;
-    using System.Data;
-
     public interface IExcelClass
     {
         /// <summary>

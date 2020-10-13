@@ -5,14 +5,14 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System;
+using System.Data;
+using System.Net;
+using System.Threading;
+using System.Windows;
+
 namespace VehicleInformationLookupTool
 {
-    using System;
-    using System.Data;
-    using System.Net;
-    using System.Threading;
-    using System.Windows;
-
     /// <summary>
     /// Interaction logic for MainWindow
     /// </summary>

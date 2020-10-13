@@ -157,7 +157,7 @@
                     <ProgressBar x:Name="Page4ProgressBar" Canvas.Left="409" Canvas.Top="76" Width="398" Height="17" IsVisibleChanged="Page4ProgressBar_IsVisibleChanged" />
                     <Button x:Name="Page4ClipboardCopyButton" Canvas.Left="479" Canvas.Top="435" Width="144" Margin="0" Click="Page4ClipboardCopyButton_Click" Content="Copy All To Clipboard" IsEnabled="False" />
                     <TextBlock x:Name="Page4Hint" Canvas.Left="616" Canvas.Top="414" Foreground="Blue" Text="The data must finish downloading to continue" TextWrapping="Wrap" />
-                    <Button x:Name="Page4Previous" Canvas.Left="624" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="GoToPreviousPage" Content="Previous" IsEnabled="False" />
+                    <Button x:Name="Page4Previous" Canvas.Left="624" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Page4Previous_Click" Content="Previous" IsEnabled="False" />
                     <Button x:Name="Page4Cancel" Canvas.Left="705" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ShutdownApplication" Content="Cancel" />
                     <Button x:Name="Page4Save" Canvas.Left="785" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Page4Save_Click" Content="Save" IsEnabled="False" />
                     <Button x:Name="Page4Help" Canvas.Left="810" Canvas.Top="0" Width="50" Background="LightYellow" Click="Help_Click" Content="Help" Tag="DataDownload.html" />

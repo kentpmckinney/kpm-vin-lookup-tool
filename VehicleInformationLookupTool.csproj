@@ -152,11 +152,9 @@
   <ItemGroup>
     <Resource Include="Maintenance Notes.txt" />
     <None Include="Resources\Car-32b.png" />
-    <Content Include="ThirdParty\EPPlus.dll" />
     <Resource Include="Car-32b.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Content Include="ThirdParty\ICSharpCode.SharpZipLib.dll" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
@@ -170,6 +168,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

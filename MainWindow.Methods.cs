@@ -7,16 +7,16 @@
 
 using System.Linq;
 using System.Text;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using Microsoft.Win32;
 
 namespace VehicleInformationLookupTool
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Diagnostics;
-    using System.Windows;
-    using System.Windows.Controls;
-    using Microsoft.Win32;
     public partial class MainWindow
     {
         private static void LaunchWebBrowser(string site)

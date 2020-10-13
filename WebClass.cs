@@ -9,6 +9,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Xml;
+using System.Threading.Tasks;
 
 namespace VehicleInformationLookupTool
 {
@@ -16,21 +17,20 @@ namespace VehicleInformationLookupTool
     {
         public bool NhtsaServiceIsWorking(string uri)
         {
-            /* This method assumes that it should get XML results with a Message node in it */
-            
-            const string testvin = "JH4TB2H26CC000000";
-            var vinUri = uri.Replace("{VIN}", testvin);
-
-            var rawXmlString = default(string);
-            using (var web = new WebClient())
+            /* Perform a GET against the API and store the raw XML result */
+            const string testVin = "JH4TB2H26CC000000";
+            var rawXmlString = ApiRequest(uri, testVin);
+            if (string.IsNullOrWhiteSpace(rawXmlString) || rawXmlString == "exception")
             {
-                rawXmlString = web.DownloadString(vinUri);
+                return false;
             }
 
+            /* De-serialize the XML and get the Message node */
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(rawXmlString);
             var messageNode = xmlDoc.SelectNodes(@"//Message");
 
+            /* Return a success boolean based on the value of the Message node */
             return messageNode != null && messageNode[0].InnerText.StartsWith("Results returned successfully");
         }
 
@@ -39,26 +39,22 @@ namespace VehicleInformationLookupTool
         {
             /* This method is called from an alternate thread */
 
-            var vinUri = uri.Replace("{VIN}", lookupVin);
-
-            var rawXmlString = default(string);
-            using (var web = new WebClient())
+            /* Perform a GET against the API and store the raw XML result */
+            var rawXmlString = ApiRequest(uri, lookupVin);
+            if (string.IsNullOrWhiteSpace(rawXmlString) || rawXmlString == "exception")
             {
-                try
-                {
-                    rawXmlString = web.DownloadString(vinUri);
-                }
-                catch (WebException)
-                {
-                    ;
-                }
+                return default;
             }
-            if (rawXmlString is null)
-                return new List<string>();
 
+            /* De-serialize the XML and get the relevant nodes */
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(rawXmlString);
             var nodes = xmlDoc.SelectNodes(xpath);
+
+            if (nodes == null || nodes.Count <= 0)
+            {
+                return default;
+            }
 
             var messageNode = xmlDoc.SelectNodes(@"//Message");
             var message = messageNode?[0]?.InnerText ?? string.Empty;
@@ -72,7 +68,9 @@ namespace VehicleInformationLookupTool
             var vinNode = xmlDoc.SelectNodes(@"//VIN");
             var vin = vinNode?[0]?.InnerText ?? string.Empty;
 
-            /* Logic to auto-correct VIN number */
+            xmlDoc = null;
+
+            /* Optionally Auto-correct VIN number */
             var vinWasAutoCorrected = false;
             var originalVin = string.Empty;
             if (autoCorrect)
@@ -85,16 +83,19 @@ namespace VehicleInformationLookupTool
                 }
             }
 
-            /* Logic to discard invalid VIN data */
+            /* Optionally Discard invalid VIN data */
             if (discardInvalid)
             {
                 if (message == "Invalid URL" || error.StartsWith("11"))
                 {
-                    return new List<string>() { "Discarded" };
+                    return new List<string>();
                 }
             }
             
+            /* Get the values for the data row from the API result */
             var vinItems = (from XmlNode node in nodes select node?.InnerText).ToList();
+            
+            /* Add additional columns to the data */
             vinItems.Add(message);
             vinItems.Add(vinWasAutoCorrected.ToString());
             vinItems.Add(originalVin);
@@ -105,30 +106,28 @@ namespace VehicleInformationLookupTool
 
         public List<string> GetVinColumnHeaders(string uri, string xpath)
         {
-            /* This method assumes that header fields are the same for all results */
-
-            const string testvin = "JH4TB2H26CC000000";
-            var vinUri = uri.Replace("{VIN}", testvin);
-
-            var rawXmlString = default(string);
-            using (var web = new WebClient())
+            /* Perform a GET against the API and store the raw XML result */
+            const string testVin = "JH4TB2H26CC000000";
+            var rawXmlString = ApiRequest(uri, testVin);
+            if (string.IsNullOrWhiteSpace(rawXmlString) || rawXmlString == "exception")
             {
-                rawXmlString = web.DownloadString(vinUri);
+                return default;
             }
 
+            /* De-serialize the XML and get the relevant nodes */
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(rawXmlString);
             var nodes = xmlDoc.SelectNodes(xpath);
 
-            if (nodes is null)
-                return default;
-
-            var headerList = new List<string>();
-            foreach (XmlNode node in nodes)
+            if (nodes == null || nodes.Count <= 0)
             {
-                var columnName = node?.Name ?? "";
-                headerList.Add(columnName);
+                return default;
             }
+
+            /* Get the column names for the data row from the API result */
+            var headerList = (from XmlNode node in nodes select node.Name).ToList();
+
+            /* Add additional column names to the data */
             headerList.Add("MessageFromServer");
             headerList.Add("AutoCorrectedVIN");
             headerList.Add("OriginalVIN");
@@ -158,6 +157,27 @@ namespace VehicleInformationLookupTool
             }
 
             return false;
+        }
+
+
+        public string ApiRequest(string uriString, string vinNumber)
+        {
+            var vinUri = uriString.Replace("{VIN}", vinNumber);
+
+            var rawXmlString = string.Empty;
+            using (var web = new WebClient())
+            {
+                try
+                {
+                    rawXmlString = web.DownloadString(vinUri);
+                }
+                catch (WebException)
+                {
+                    return "exception";
+                }
+            }
+
+            return rawXmlString;
         }
     }
 }

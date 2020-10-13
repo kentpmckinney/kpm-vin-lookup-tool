@@ -5,21 +5,18 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System.Xml.Linq;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using OfficeOpenXml;
+using System.Text;
+using ExcelDataReader;
 
 namespace VehicleInformationLookupTool
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.IO;
-    using System.Linq;
-    using System.Windows;
-    using OfficeOpenXml;
-    using System.Text;
-    using ExcelDataReader;
-
-
     public class ExcelClass : IExcelClass, IDisposable
     {
 
@@ -162,12 +159,12 @@ namespace VehicleInformationLookupTool
 
             try
             {
-                using (var excel = new ExcelPackage(new FileInfo(saveFileName)))
+                using (var excel = new ExcelPackage())
                 {
                     var worksheet = excel.Workbook.Worksheets.Add("Vehicle Information Lookup Tool");
-                    worksheet.SelectedRange.LoadFromDataTable(data, true);
+                    worksheet.Cells["A1"].LoadFromDataTable(data, true);
                     worksheet.Cells.AutoFitColumns(0);
-                    excel.Save();
+                    excel.SaveAs(new FileInfo(saveFileName));
                 }
 
                 return true;

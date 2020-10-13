@@ -5,22 +5,22 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
+using VehicleInformationLookupTool.Properties;
+
 namespace VehicleInformationLookupTool
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Data;
-    using System.IO;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Documents;
-    using System.Windows.Media;
-    using Properties;
-
     public partial class MainWindow
     {
         private void Window_Closing(object sender, CancelEventArgs e) =>
@@ -37,13 +37,17 @@ namespace VehicleInformationLookupTool
         }
 
 
-        private void GoToNextPage(object sender, RoutedEventArgs e) =>
+        private void GoToNextPage(object sender, RoutedEventArgs e)
+        {
             Dispatcher.BeginInvoke(new Action(() => TabControl.SelectedIndex++));
+        }
         
 
-        private void GoToPreviousPage(object sender, RoutedEventArgs e) =>
+        private void GoToPreviousPage(object sender, RoutedEventArgs e)
+        {
             Dispatcher.BeginInvoke(new Action(() => TabControl.SelectedIndex--));
-
+        }
+        
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e) =>
             LaunchWebBrowser((e.Source as Hyperlink)?.NavigateUri.OriginalString);
@@ -255,7 +259,7 @@ namespace VehicleInformationLookupTool
         private void Page2Next_Click(object sender, RoutedEventArgs e)
         {
             /* The intent of performing the test here is so that the user
-            will see the Verify Internet Connectivity page only if they need to */
+               will see the Verify Internet Connectivity page only if they need to */
             Page3TestWebService_Click(null, null);
             GoToNextPage(null, null);
         }
@@ -263,8 +267,7 @@ namespace VehicleInformationLookupTool
 
         private void Page3TestWebService_Click(object sender, RoutedEventArgs e)
         {
-            var uri = Page3WebServiceUri?.Text ?? "";
-            uri.ThrowIfNullOrEmpty();
+            var uri = Page3WebServiceUri?.Text ?? string.Empty;
 
             if (_web.NhtsaServiceIsWorking(uri))
             {
@@ -300,7 +303,6 @@ namespace VehicleInformationLookupTool
         {
             Page3WebServiceUri.Text = "http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/{VIN}?format=xml";
             Page3DataNodeXpath.Text = "/Response/Results/DecodedVINValues/*";
-            // TODO: REMOVE AFTER TESTING: https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/5UXWX7C5*BA?format=xml
         }
 
 
@@ -315,7 +317,7 @@ namespace VehicleInformationLookupTool
         }
 
 
-        private void DownloadVinData()
+        private async void DownloadVinData()
         {
             var uri = Page3WebServiceUri.Text;
             var xpath = Page3DataNodeXpath.Text;
@@ -352,41 +354,44 @@ namespace VehicleInformationLookupTool
             var autoCorrect = Page2AutoCorrectVinCheckBox?.IsChecked == true;
             var discardInvalid = Page2DiscardInvalidVinCheckBox?.IsChecked == true;
 
-            using (new SemaphoreSlim(1, 4))
+            var semaphoreSlim = new SemaphoreSlim(1, 4);
+            
+            var tasks = new List<Task>();
+            foreach (var vinNumber in vinList)
             {
-                var tasks = new List<Task>();
-                foreach (var vinNumber in vinList)
-                {
-                    // Each task added runs in a separate thread 
-                    tasks.Add(
-                        /* Start a new task to download data for the current VIN number and when done pass the result to the next step */
-                        Task<List<string>>.Factory
-                            .StartNew(() => _web.GetVinDataRow(uri, vinNumber, xpath, autoCorrect, discardInvalid), _downloadCancellationToken)
-                            .ContinueWith((task) =>
+                await semaphoreSlim.WaitAsync(_downloadCancellationToken);
+                tasks.Add(
+                    /* Start a new task to download data for the current VIN number and when done pass the result to the next step */
+                    Task<List<string>>.Factory
+                        .StartNew(() => _web.GetVinDataRow(uri, vinNumber, xpath, autoCorrect, discardInvalid), _downloadCancellationToken)
+                        .ContinueWith((task) =>
+                        {
+                            /* Proceed only if the user has not requested cancellation */
+                            if (_downloadCancellationToken.IsCancellationRequested == false)
                             {
-                                // Proceed only if the user has not requested cancellation
-                                if (_downloadCancellationToken.IsCancellationRequested == false)
+                                if (task.Result != null)
                                 {
                                     AddVinRowToDataTable(_vinData, task.Result);
-                                    Page4ProgressBar.Value++;
                                 }
-                            }, _downloadCancellationToken, TaskContinuationOptions.PreferFairness, scheduler));
-                }
-
-                /* Update the user interface when all tasks have completed
-                (Creates a new cancellation token so that it runs even if the user clicks cancel) */
-                Task.Factory.ContinueWhenAll(
-                    tasks.ToArray(),
-                    t =>
-                    {
-                        UpdateUserInterfaceDownloadComplete(_vinData);
-                    },
-                    new CancellationToken(), TaskContinuationOptions.PreferFairness, scheduler);
+                                Page4ProgressBar.Value++;
+                            }
+                            semaphoreSlim.Release();
+                        }, _downloadCancellationToken, TaskContinuationOptions.RunContinuationsAsynchronously, scheduler));
             }
+
+            /* Update the user interface when all tasks have completed
+            (Creates a new cancellation token so that it runs even if the user clicks cancel) */
+            await Task.Factory.ContinueWhenAll(
+                tasks.ToArray(),
+                t =>
+                {
+                    UpdateUserInterfaceDownloadComplete();
+                },
+                new CancellationToken(), TaskContinuationOptions.PreferFairness, scheduler);
         }
 
 
-        private void UpdateUserInterfaceDownloadComplete(in DataTable data)
+        private void UpdateUserInterfaceDownloadComplete()
         {
             /* Ensure that the items in Page4DataGrid are in the correct order since
             the asynchronous and simultaneous downloading puts them out of order*/
@@ -470,6 +475,16 @@ namespace VehicleInformationLookupTool
         }
 
 
+        private void Page4Previous_Click(object sender, RoutedEventArgs e)
+        {
+            GoToPreviousPage(null, null);
+            if (Page3Next?.IsEnabled == true)
+            {
+                GoToPreviousPage(null, null);
+            }
+        }
+
+
         private void Page4Save_Click(object sender, RoutedEventArgs e)
         {
             var columnNames = GetDataGridColumnNames(Page4DataGrid);
@@ -510,7 +525,14 @@ namespace VehicleInformationLookupTool
                 ? string.Empty
                 : fileName;
 
-            Page6Save.IsEnabled = false;
+            if (string.IsNullOrWhiteSpace(Page6NewExcelFileTextBox.Text))
+            {
+                Page6Save.IsEnabled = false;
+            }
+            else
+            {
+                Page6Save.IsEnabled = true;
+            }
         }
 
 
