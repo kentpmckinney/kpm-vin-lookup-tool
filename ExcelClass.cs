@@ -67,17 +67,20 @@ namespace VehicleInformationLookupTool
 
         public void OpenFile(string fileName)
         {
-            fileName.ThrowIfNullOrEmpty();
+            /* Requirement: files with extensions .xls, .xlsx, and .csv must have matching content */
 
-            if (!File.Exists(fileName))
+            /* Alert the user and return if the fileName is not valid */
+            if (string.IsNullOrWhiteSpace(fileName) || !File.Exists(fileName))
             {
-                MessageBox.Show(fileName, "File Not Found");
+                MessageBox.Show(fileName, "File Not Found Or Not Accessible");
+                return;
             }
 
             try
             {
                 _fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read);
 
+                /* Open the file with the appropriate method based on the file's extension */
                 _excelDataReader = default;
                 switch (Path.GetExtension(fileName).ToLower())
                 {
@@ -95,17 +98,30 @@ namespace VehicleInformationLookupTool
                         break;
                 }
 
+                /* Read data from the entire spreadsheet */
                 _data = _excelDataReader?.AsDataSet(new ExcelDataSetConfiguration()
                 {
-                    ConfigureDataTable = (tableReader) => new ExcelDataTableConfiguration()
+                    ConfigureDataTable = reader => new ExcelDataTableConfiguration()
                     {
                         UseHeaderRow = true
                     }
                 });
             }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show($"The file could not be accessed, possibly because permissions on the file do not allow it:\n\n{fileName}", "Unable to Open File");
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show($"The folder the file is located in cannot be found, possibly because the location is no longer accessible:\n\n{fileName}", "Unable to Open File");
+            }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show($"The file could not be found:\n\n{fileName}", "Unable to Open File");
+            }
             catch (IOException)
             {
-                MessageBox.Show("The file could not be opened, possibly because it is open in another program:\n\n" + fileName, "Unable to Open File");
+                MessageBox.Show($"The file could not be opened, possibly because it is open in another program:\n\n{fileName}", "Unable to Open File");
             }
         }
 
@@ -116,15 +132,25 @@ namespace VehicleInformationLookupTool
 
             return _data.Tables[worksheetIndex];
         }
-            
         
 
         public int SheetLikelyToContainVins()
         {
             var sheets = GetSheetNames();
+            if (sheets is null || sheets.Count <= 0)
+            {
+                return 0;
+            }
+
             for (var i = 0; i < sheets.Count; i++)
             {
                 var columnNames = GetColumnNames(sheets[i]);
+                if (columnNames is null || columnNames.Count <= 0)
+                {
+                    continue;
+                }
+
+                /* Check if any columns in this sheet match any items in the list of vin indicators */
                 if (columnNames.Any(name => VinIndicators.Contains(name, StringComparer.OrdinalIgnoreCase)))
                 {
                     return i;
@@ -139,6 +165,7 @@ namespace VehicleInformationLookupTool
         {
             sheetName.ThrowIfNullOrEmpty();
 
+            /* Check if any columns in this sheet match any items in the list of vin indicators */
             var columnNames = this.GetColumnNames(sheetName);
             for (var i = 0; i < columnNames.Count; i++)
             {
@@ -187,7 +214,7 @@ namespace VehicleInformationLookupTool
                 {
                     var numColumns = data.Columns.Count;
                     var lastColumn = numColumns - 1;
-                    const string comma = ",";
+                    const string delimiter = ",";
 
                     for (var r = 0; r < data.Rows.Count; r++)
                     {
@@ -198,14 +225,10 @@ namespace VehicleInformationLookupTool
                         {
                             var value = values[c].ToString();
                             value = value.Replace(',',' ');
-
-                            if (c == lastColumn)
+                            line.Append(value);
+                            if (c != lastColumn)
                             {
-                                line.Append(value);
-                            }
-                            else
-                            {
-                                line.Append(value + comma);
+                                line.Append(delimiter);
                             }
                         }
 

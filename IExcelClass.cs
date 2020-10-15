@@ -13,9 +13,9 @@ namespace VehicleInformationLookupTool
     public interface IExcelClass
     {
         /// <summary>
-        /// Opens an Excel file
+        /// Opens an Excel or CSV file
         /// </summary>
-        /// <param name="fileName"> The file name </param>
+        /// <param name="fileName"> The full path of the file </param>
         void OpenFile(string fileName);
 
 

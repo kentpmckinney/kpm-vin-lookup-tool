@@ -278,10 +278,20 @@ namespace VehicleInformationLookupTool
             var columnIndex = GetDataGridColumnIndex(datagrid, columnToOrder);
             foreach (var orderedVinNumber in orderedStringList)
             {
+                if (string.IsNullOrWhiteSpace(orderedVinNumber))
+                {
+                    continue;
+                }
+
                 foreach (DataRowView row in datagrid.Items)
                 {
-                    var vinValue = row[columnIndex].ToString().ToLower();
-                    var originalVin = row["OriginalVIN"].ToString().ToLower();
+                    if (row is null)
+                    {
+                        continue;
+                    }
+
+                    var vinValue = row[columnIndex]?.ToString().ToLower() ?? string.Empty;
+                    var originalVin = row["OriginalVIN"]?.ToString().ToLower() ?? string.Empty;
                     if (orderedVinNumber.ToLower() == vinValue || orderedVinNumber.ToLower() == originalVin)
                     {
                         orderedData.ImportRow(row.Row);

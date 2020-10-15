@@ -50,7 +50,6 @@ namespace VehicleInformationLookupTool
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(rawXmlString);
             var nodes = xmlDoc.SelectNodes(xpath);
-
             if (nodes == null || nodes.Count <= 0)
             {
                 return default;
@@ -70,7 +69,7 @@ namespace VehicleInformationLookupTool
 
             xmlDoc = null;
 
-            /* Optionally Auto-correct VIN number */
+            /* Optionally Auto-correct VIN numbers */
             var vinWasAutoCorrected = false;
             var originalVin = string.Empty;
             if (autoCorrect)
@@ -88,12 +87,12 @@ namespace VehicleInformationLookupTool
             {
                 if (message == "Invalid URL" || error.StartsWith("11"))
                 {
-                    return new List<string>();
+                    return default;
                 }
             }
             
             /* Get the values for the data row from the API result */
-            var vinItems = (from XmlNode node in nodes select node?.InnerText).ToList();
+            var vinItems = (from XmlNode node in nodes select node.InnerText).ToList();
             
             /* Add additional columns to the data */
             vinItems.Add(message);
@@ -118,7 +117,6 @@ namespace VehicleInformationLookupTool
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(rawXmlString);
             var nodes = xmlDoc.SelectNodes(xpath);
-
             if (nodes == null || nodes.Count <= 0)
             {
                 return default;
@@ -148,6 +146,7 @@ namespace VehicleInformationLookupTool
                         {
                             return true;
                         }
+                        stream?.Close();
                     }
                 }
             }
@@ -164,7 +163,7 @@ namespace VehicleInformationLookupTool
         {
             var vinUri = uriString.Replace("{VIN}", vinNumber);
 
-            var rawXmlString = string.Empty;
+            string rawXmlString;
             using (var web = new WebClient())
             {
                 try
