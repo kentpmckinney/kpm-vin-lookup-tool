@@ -1,6 +1,20 @@
 Categories: `Desktop;C#;WPF`
 Technologies: `C#;WPF`
-Summary: `An batch processing tool to pull data for Vehicle Identification Numbers (VINs)`
+Summary: `Looks up details for Vehicle Identification Numbers (VINs) using the National Highway Traffic Safety Administration's web API.
+
+Features:
+ * Designed for batch processing
+ * Uses multiple concurrent connections
+ * Tolerates network interruptions
+ * Reads VIN numbers from Excel, CSV, or paste from clipboard
+ * Saves results to Excel, CSV, or copy to clipboard
+ * Re-orders result rows to match the order of the source data
+ * Allows choosing which columns to include in the output
+ * Optionally auto-correct VIN numbers
+ * Optionally discard invalid VIN numbers
+
+To use this application, download the current release from GitHub.
+`
 Instructions: ``
 Demolink: ``
 Screenshots: ``
