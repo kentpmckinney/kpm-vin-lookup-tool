@@ -205,10 +205,10 @@ namespace VehicleInformationLookupTool
 
         private void Page2_Selected(object sender, RoutedEventArgs e)
         {
-            if (_navigateDirection is Direction.Backward && Page4DataGrid.ItemsSource != null)
+            if (_navigateDirection is Direction.Backward && Page3DataGrid.ItemsSource != null)
             {
-                Page4DataGrid.ItemsSource = null;
-                Page4DataGrid.Items.Clear();
+                Page3DataGrid.ItemsSource = null;
+                Page3DataGrid.Items.Clear();
             }
         }
 
@@ -272,73 +272,15 @@ namespace VehicleInformationLookupTool
         private void Page2Next_Click(object sender, RoutedEventArgs e)
         {
             _navigateDirection = Direction.Forward;
-
-            /* Perform API availability check */
-            Page3TestWebService_Automatic(null, null);
             GoToNextPage(null, null);
         }
 
 
         private void Page3_Selected(object sender, RoutedEventArgs e)
         {
-            if (_navigateDirection is Direction.Backward)
-            {
-                GoToPreviousPage(null,null);
-            }
-            else if (Page3Next.IsEnabled)
-            {
-                GoToNextPage(null, null);
-            }
-        }
-
-
-        private void Page3TestWebService_Automatic(object sender, RoutedEventArgs e)
-        {
-            var uri = Page3WebServiceUri.Text;
-
-            if (_web.NhtsaServiceIsWorking(uri))
-            {
-                Page3StatusTextBlock.Text = "Success";
-                Page3Hint.Visibility = Visibility.Hidden;
-                Page3Next.IsEnabled = true;
-            }
-            else
-            {
-                Page3StatusTextBlock.Text = "Unable to connect to the NHTSA service. ";
-                if (_web.IsConnectedToInternet())
-                {
-                    Page3StatusTextBlock.Text += "Please verify configuration settings and click Try Again.";
-                }
-                else
-                {
-                    Page3StatusTextBlock.Text += "Please verify Internet connectivity and click Try Again.";
-                }
-            }
-        }
-
-
-        private void Page3TestWebService_Click(object sender, RoutedEventArgs e)
-        {
-            Page3TestWebService_Automatic(null, null);
-            if (Page3StatusTextBlock.Text == "Success")
-            {
-                GoToNextPage(null, null);
-            }
-        }
-
-
-        private void Page3ResetDefault_Click(object sender, RoutedEventArgs e)
-        {
-            Page3WebServiceUri.Text = "http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/{VIN}?format=xml";
-            Page3DataNodeXpath.Text = "/Response/Results/DecodedVINValues/*";
-        }
-
-
-        private void Page4ProgressBar_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
             /* Runs only when the page is visible to the user and they will be able to see UI changes on the page */
             /* Run only once when ItemsSource is still null */
-            if (Page4DataGrid.ItemsSource is null)
+            if (Page3DataGrid.ItemsSource is null)
             {
                 DownloadVinData();
             }
@@ -348,19 +290,12 @@ namespace VehicleInformationLookupTool
         private async void DownloadVinData()
         {
             /* Set button state */
-            Page4Next.IsEnabled = false;
-            Page4Previous.IsEnabled = false;
-            Page4ClipboardCopyButton.IsEnabled = false;
+            Page3Next.IsEnabled = false;
+            Page3Previous.IsEnabled = false;
+            Page3ClipboardCopyButton.IsEnabled = false;
 
-            var uri = Page3WebServiceUri.Text;
-            var xpath = Page3DataNodeXpath.Text;
-
-            if (string.IsNullOrWhiteSpace(uri) || string.IsNullOrWhiteSpace(xpath))
-            {
-                Page3ResetDefault_Click(null, null);
-                uri = Page3WebServiceUri.Text;
-                xpath = Page3DataNodeXpath.Text;
-            }
+            var uri = "http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/{VIN}?format=xml";
+            var xpath = "/Response/Results/DecodedVINValues/*";
 
             /* Populate the list of VIN numbers */
             var vinList = Page1SourceExcelRadioButton.IsChecked == true
@@ -372,20 +307,28 @@ namespace VehicleInformationLookupTool
             _vinData.Rows.Clear();
 
             /* Add columns to the DataTable */
-            var columnNames = _web.GetVinColumnHeaders(uri, xpath);
+            var columnNames = _web.GetVinColumnHeaders(uri, xpath, _downloadCancellationToken);
+            if (columnNames is null)
+            {
+                return;
+            }
             foreach (var name in columnNames)
             {
+                if (name is null)
+                {
+                    continue;
+                }
                 _vinData.Columns.Add(name);
             }
 
             /* Establish data binding between VinData and Page4DataGrid */
             /* This should happen after the columns have been added and before any rows are added*/
-            Page4DataGrid.ItemsSource = _vinData.DefaultView;
+            Page3DataGrid.ItemsSource = _vinData.DefaultView;
 
             /* Set up the progress bar */
-            Page4ProgressBar.Maximum = vinList.Count;
-            Page4ProgressBar.Value = 0;
-            Page4DownloadStatus.Text = "Status: Downloading...";
+            Page3ProgressBar.Maximum = vinList.Count;
+            Page3ProgressBar.Value = 0;
+            Page3DownloadStatus.Text = "Status: Downloading...";
 
             /* Temporarily change the text of the Cancel button at the bottom to "Exit" for clarity */
             Page4Cancel.Content = "Exit";
@@ -399,24 +342,35 @@ namespace VehicleInformationLookupTool
             var tasks = new List<Task>();
             foreach (var vinNumber in vinList)
             {
-                await semaphoreSlim.WaitAsync(_downloadCancellationToken);
-                tasks.Add(
-                    /* Start a new task to download data for the current VIN number and when done pass the result to the next step */
-                    Task<List<string>>.Factory
-                        .StartNew(() => _web.GetVinDataRow(uri, vinNumber, xpath, autoCorrect, discardInvalid), _downloadCancellationToken)
-                        .ContinueWith((task) =>
-                        {
-                            /* Proceed only if the user has not requested cancellation */
-                            if (_downloadCancellationToken.IsCancellationRequested == false)
-                            {
-                                if (task.Result != null)
+                try
+                {
+                    await semaphoreSlim.WaitAsync(_downloadCancellationToken);
+                    tasks.Add(
+                        /* Start a new task to download data for the current VIN number and when done pass the result to the next step */
+                        Task<List<string>>.Factory
+                            .StartNew(() => _web.GetVinDataRow(uri, vinNumber, xpath, autoCorrect, discardInvalid, _downloadCancellationToken),
+                                _downloadCancellationToken)
+                            .ContinueWith((task) =>
                                 {
-                                    AddVinRowToDataTable(_vinData, task.Result);
-                                }
-                                Page4ProgressBar.Value++;
-                            }
-                            semaphoreSlim.Release();
-                        }, _downloadCancellationToken, TaskContinuationOptions.RunContinuationsAsynchronously, scheduler));
+                                    /* Proceed only if the user has not requested cancellation */
+                                    if (_downloadCancellationToken.IsCancellationRequested == false)
+                                    {
+                                        if (task.Result != null)
+                                        {
+                                            AddVinRowToDataTable(_vinData, task.Result);
+                                        }
+
+                                        Page3ProgressBar.Value++;
+                                    }
+
+                                    semaphoreSlim.Release();
+                                }, _downloadCancellationToken, TaskContinuationOptions.RunContinuationsAsynchronously,
+                                scheduler));
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
             }
 
             /* Update the user interface when all tasks have completed */ 
@@ -432,48 +386,48 @@ namespace VehicleInformationLookupTool
         {
             /* Ensure that the items in Page4DataGrid are in the correct order since
             the asynchronous and simultaneous downloading puts them out of order*/
-            Page4DownloadStatus.Text = "Status: Re-ordering Results...";
+            Page3DownloadStatus.Text = "Status: Re-ordering Results...";
 
             if (Page1SourceExcelRadioButton.IsChecked == true)
             {
                 var vinList = GetVinList(Page2DataGrid, Page1ColumnComboBox.Text);
-                OrderGridViewItems(Page4DataGrid, Page1ColumnComboBox.Text, vinList);
+                OrderGridViewItems(Page3DataGrid, Page1ColumnComboBox.Text, vinList);
             }
             else
             {
                 var vinList = GetVinList(Page2DataGrid, "VIN");
-                OrderGridViewItems(Page4DataGrid, "VIN", vinList);
+                OrderGridViewItems(Page3DataGrid, "VIN", vinList);
             }
 
             //Refresh the data view
-            Page4DataGrid.Items.Refresh();
+            Page3DataGrid.Items.Refresh();
 
             /* Change the text of the Cancel button at the bottom back to "Cancel" */
-            Page4Cancel.Content = "Cancel";
+            Page3Cancel.Content = "Cancel";
 
             /* Update the UI to reflect that the download is complete */
-            Page4CancelDownloadButton.IsEnabled = false;
-            Page4Hint.Visibility = Visibility.Hidden;
-            Page4Next.IsEnabled = true;
-            Page4Previous.IsEnabled = true;
-            Page4Previous.IsEnabled = true;
-            Page4DownloadStatus.Text = "Status: Completed";
-            Page4ClipboardCopyButton.IsEnabled = true;
+            Page3CancelDownloadButton.IsEnabled = false;
+            Page3Hint.Visibility = Visibility.Hidden;
+            Page3Next.IsEnabled = true;
+            Page3Previous.IsEnabled = true;
+            Page3Previous.IsEnabled = true;
+            Page3DownloadStatus.Text = "Status: Completed";
+            Page3ClipboardCopyButton.IsEnabled = true;
         }
 
 
-        private void Page4CancelDownload_Click(object sender, RoutedEventArgs e) =>
+        private void Page3CancelDownload_Click(object sender, RoutedEventArgs e) =>
             _downloadCancellationSource.Cancel(true);
 
 
-        private void Page4ClipboardCopyButton_Click(object sender, RoutedEventArgs e)
+        private void Page3ClipboardCopyButton_Click(object sender, RoutedEventArgs e)
         {
             var clipboardText = new StringBuilder();
             var newline = Environment.NewLine;
             const char delimiter = '\t';
 
             /* Add a header row to clipboardText */
-            var columnNames = GetDataGridColumnNames(Page4DataGrid);
+            var columnNames = GetDataGridColumnNames(Page3DataGrid);
             if (columnNames is null)
             {
                 return;
@@ -489,8 +443,8 @@ namespace VehicleInformationLookupTool
             clipboardText.Append(newline);
             
             /* Add data rows to clipboardText */
-            var numRows = Page4DataGrid.Items.Count;
-            var numColumns = Page4DataGrid.Columns.Count;
+            var numRows = Page3DataGrid.Items.Count;
+            var numColumns = Page3DataGrid.Columns.Count;
             if (numRows <= 0 || numColumns <= 0)
             {
                 return;
@@ -498,7 +452,7 @@ namespace VehicleInformationLookupTool
             var lastColumn = numColumns - 1;
             for (var r = 0; r < numRows; r++)
             {
-                var columnValues = GetDataGridRowValues(Page4DataGrid, r);
+                var columnValues = GetDataGridRowValues(Page3DataGrid, r);
                 if (columnValues is null || columnValues.Count <= 0)
                 {
                     continue;
@@ -517,18 +471,18 @@ namespace VehicleInformationLookupTool
         }
 
 
-        private void Page4Previous_Click(object sender, RoutedEventArgs e)
+        private void Page3Previous_Click(object sender, RoutedEventArgs e)
         {
             _navigateDirection = Direction.Backward;
             GoToPreviousPage(null, null);
         }
 
 
-        private void Page4Next_Click(object sender, RoutedEventArgs e)
+        private void Page3Next_Click(object sender, RoutedEventArgs e)
         {
             _navigateDirection = Direction.Forward;
 
-            var columnNames = GetDataGridColumnNames(Page4DataGrid);
+            var columnNames = GetDataGridColumnNames(Page3DataGrid);
             if (columnNames is null || columnNames.Count <= 0)
             {
                 return;
@@ -540,52 +494,52 @@ namespace VehicleInformationLookupTool
                     Content = name,
                     IsChecked = true
                 };
-                Page5ListView.Items.Add(box);
+                Page4ListView.Items.Add(box);
             }
 
             GoToNextPage(null, null);
         }
 
 
-        private void Page5CheckAllButton_Click(object sender, RoutedEventArgs e)
+        private void Page4CheckAllButton_Click(object sender, RoutedEventArgs e)
         {
-            var buttonText = Page5CheckAllButton.Content as string;
+            var buttonText = Page4CheckAllButton.Content as string;
             var isButtonCheckAll = buttonText == "Check All";
 
             /* Check or uncheck all checkboxes */
-            foreach (CheckBox item in Page5ListView.Items)
+            foreach (CheckBox item in Page4ListView.Items)
             {
                 item.IsChecked = isButtonCheckAll;
             }
 
             /* Toggle the text on the button to its logical opposite */
-            Page5CheckAllButton.Content = isButtonCheckAll ? "Uncheck All" : "Check All";
+            Page4CheckAllButton.Content = isButtonCheckAll ? "Uncheck All" : "Check All";
         }
 
 
-        private void Page6Browse_Click(object sender, RoutedEventArgs e)
+        private void Page5Browse_Click(object sender, RoutedEventArgs e)
         {
-            var fileName = PromptSaveExcelFileName();
+            var fileName = PromptSaveExcelFileName(Page5CreateNewExcelFileRadioButton.IsChecked == true);
 
-            Page6NewExcelFileTextBox.Text = string.IsNullOrWhiteSpace(fileName)
+            Page5NewExcelFileTextBox.Text = string.IsNullOrWhiteSpace(fileName)
                 ? string.Empty
                 : fileName;
 
             /* Enable or disable the Save button */
-            if (string.IsNullOrWhiteSpace(Page6NewExcelFileTextBox.Text))
+            if (string.IsNullOrWhiteSpace(Page5NewExcelFileTextBox.Text))
             {
-                Page6Save.IsEnabled = false;
+                Page5Save.IsEnabled = false;
             }
             else
             {
-                Page6Save.IsEnabled = true;
+                Page5Save.IsEnabled = true;
             }
         }
 
 
-        private void Page6Save_Click(object sender, RoutedEventArgs e)
+        private void Page5Save_Click(object sender, RoutedEventArgs e)
         {
-            var saveFileName = Page6NewExcelFileTextBox.Text;
+            var saveFileName = Page5NewExcelFileTextBox.Text;
 
             /* Abort if the file name is an empty string or whitespace */
             if (string.IsNullOrWhiteSpace(saveFileName))
@@ -596,14 +550,14 @@ namespace VehicleInformationLookupTool
             var filteredTable = new DataTable();
 
             /* Add column headers to the DataTable */
-            var columnNames = GetDataGridColumnNames(Page4DataGrid);
+            var columnNames = GetDataGridColumnNames(Page3DataGrid);
             if (columnNames is null || columnNames.Count <= 0)
             {
                 return;
             }
             foreach (var name in columnNames)
             {
-                foreach (CheckBox item in Page5ListView.Items)
+                foreach (CheckBox item in Page4ListView.Items)
                 {
                     if (item is null)
                     {
@@ -618,14 +572,14 @@ namespace VehicleInformationLookupTool
             }
             
             /* Add data rows to the worksheet for each row in the source DataGrid */
-            var numRows = Page4DataGrid.Items.Count;
+            var numRows = Page3DataGrid.Items.Count;
             for (var row = 0; row < numRows; row++)
             {
                 var numCheckedColumns = 0;
                 var filteredRow = filteredTable.NewRow();
 
                 /* For each column in the source DataGrid via the return value of GetDataGridRowValues */
-                var dataValues = GetDataGridRowValues(Page4DataGrid, row);
+                var dataValues = GetDataGridRowValues(Page3DataGrid, row);
                 if (dataValues is null || dataValues.Count <= 0)
                 {
                     continue;
@@ -639,7 +593,7 @@ namespace VehicleInformationLookupTool
                     }
 
                     /* Find the currentColumnName in page5ListView */
-                    foreach (CheckBox item in Page5ListView.Items)
+                    foreach (CheckBox item in Page4ListView.Items)
                     {
                         if (item is null)
                         {
@@ -659,19 +613,19 @@ namespace VehicleInformationLookupTool
                 filteredTable.Rows.Add(filteredRow);
             }
 
-            var saveSuccessful = Page6CreateNewExcelFileRadioButton.IsChecked == true
+            var saveSuccessful = Page5CreateNewExcelFileRadioButton.IsChecked == true
                 ? _excel.SaveExcelFile(saveFileName, filteredTable)
                 : _excel.SaveCsvFile(saveFileName, filteredTable);
             
             if (saveSuccessful)
             {
-                Page6FileOpenHint.Visibility = Visibility.Hidden;
-                Page7SavedFileTextBox.Text = saveFileName;
+                Page5FileOpenHint.Visibility = Visibility.Hidden;
+                Page6SavedFileTextBox.Text = saveFileName;
                 GoToNextPage(null, null);
             }
             else
             {
-                Page6FileOpenHint.Visibility = Visibility.Visible;
+                Page5FileOpenHint.Visibility = Visibility.Visible;
             }
         }
     }

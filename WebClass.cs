@@ -9,17 +9,46 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Xml;
-using System.Threading.Tasks;
+using System.Net.Http;
+using System.Threading;
 
 namespace VehicleInformationLookupTool
 {
     public class WebClass : IWebClass
     {
-        public bool NhtsaServiceIsWorking(string uri)
+        private readonly HttpClient _client = new HttpClient();
+
+        public WebClass()
+        {
+            /* Configure network connection settings */
+            ServicePointManager.DefaultConnectionLimit = 4;
+            ServicePointManager.Expect100Continue = false;
+            ServicePointManager.CheckCertificateRevocationList = false;
+            ServicePointManager.ReusePort = true;
+            ServicePointManager.UseNagleAlgorithm = false;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
+        }
+
+        private bool IsConnectedToInternet()
+        {
+            try
+            {
+                _ = _client.GetAsync(@"http://www.google.com").Result;
+            }
+            catch
+            {
+                return false;
+            }
+
+            return false;
+        }
+
+
+        public bool IsApiAccessible(string uri, CancellationToken token)
         {
             /* Perform a GET against the API and store the raw XML result */
             const string testVin = "JH4TB2H26CC000000";
-            var rawXmlString = ApiRequest(uri, testVin);
+            var rawXmlString = ApiRequest(uri, testVin, token);
             if (string.IsNullOrWhiteSpace(rawXmlString) || rawXmlString == "exception")
             {
                 return false;
@@ -35,12 +64,12 @@ namespace VehicleInformationLookupTool
         }
 
 
-        public List<string> GetVinDataRow(string uri, string lookupVin, string xpath, bool autoCorrect, bool discardInvalid)
+        public List<string> GetVinDataRow(string uri, string lookupVin, string xpath, bool autoCorrect, bool discardInvalid, CancellationToken token)
         {
             /* This method is called from an alternate thread */
 
             /* Perform a GET against the API and store the raw XML result */
-            var rawXmlString = ApiRequest(uri, lookupVin);
+            var rawXmlString = ApiRequest(uri, lookupVin, token);
             if (string.IsNullOrWhiteSpace(rawXmlString) || rawXmlString == "exception")
             {
                 return default;
@@ -103,11 +132,11 @@ namespace VehicleInformationLookupTool
         }
 
 
-        public List<string> GetVinColumnHeaders(string uri, string xpath)
+        public List<string> GetVinColumnHeaders(string uri, string xpath, CancellationToken token)
         {
             /* Perform a GET against the API and store the raw XML result */
             const string testVin = "JH4TB2H26CC000000";
-            var rawXmlString = ApiRequest(uri, testVin);
+            var rawXmlString = ApiRequest(uri, testVin, token);
             if (string.IsNullOrWhiteSpace(rawXmlString) || rawXmlString == "exception")
             {
                 return default;
@@ -133,50 +162,33 @@ namespace VehicleInformationLookupTool
             return headerList;
         }
 
-        
-        public bool IsConnectedToInternet()
+
+        public string ApiRequest(string uriString, string vinNumber, CancellationToken token, int attempts = 3)
         {
-            try
-            {
-                using (var web = new WebClient())
-                {
-                    using (var stream = web.OpenRead(@"http://www.google.com"))
-                    {
-                        if (stream != null && stream.CanRead)
-                        {
-                            return true;
-                        }
-                        stream?.Close();
-                    }
-                }
-            }
-            catch
-            {
-                return false;
-            }
-
-            return false;
-        }
-
-
-        public string ApiRequest(string uriString, string vinNumber)
-        {
-            var vinUri = uriString.Replace("{VIN}", vinNumber);
-
-            string rawXmlString;
-            using (var web = new WebClient())
+            var uri = uriString.Replace("{VIN}", vinNumber);
+            while (true)
             {
                 try
                 {
-                    rawXmlString = web.DownloadString(vinUri);
+                    if (token.IsCancellationRequested)
+                    {
+                        return string.Empty;
+                    }
+                    attempts--;
+                    return _client.GetAsync(uri, token).Result.Content.ReadAsStringAsync().Result;
                 }
-                catch (WebException)
+                catch when (attempts > 0)
                 {
-                    return "exception";
+                    while (!IsConnectedToInternet())
+                    {
+                        if (token.IsCancellationRequested)
+                        {
+                            return string.Empty;
+                        }
+                        Thread.Sleep(30000);
+                    }
                 }
             }
-
-            return rawXmlString;
         }
     }
 }

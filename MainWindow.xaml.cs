@@ -30,14 +30,8 @@ namespace VehicleInformationLookupTool
 
         public MainWindow()
         {
-            /* Data initialization for MainWindow */
+            /* Create the cancellation token for the downloading process */
             _downloadCancellationToken = _downloadCancellationSource.Token;
-
-            ServicePointManager.DefaultConnectionLimit = 4;
-            ServicePointManager.Expect100Continue = true;
-
-            /* Enable all commonly used HTTPS protocols */
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
 
             InitializeComponent();
         }

@@ -124,57 +124,32 @@
                     <Button x:Name="Page2Help" Canvas.Left="810" Canvas.Top="0" Width="50" Background="LightYellow" Click="Help_Click" Content="Help" Tag="ConfirmVINNumberSelection.html" />
                 </Canvas>
             </TabItem>
-            <TabItem Header="Page3" Selector.Selected="Page3_Selected">
-                <Canvas>
-                    <Border Height="70" Margin="0,0,668,271" Background="DarkBlue" BorderBrush="Black" BorderThickness="1" CornerRadius="0,0,120,0">
-                        <Label Width="146" Height="62" Margin="12,-2,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="" FontSize="34" Foreground="White" />
-                    </Border>
-                    <TextBlock Width="619" Height="62" Margin="174,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="28" Foreground="DarkBlue" Text="Verify Internet Connectivity" />
-                    <Expander Canvas.Left="110" Canvas.Top="161" Width="753" Height="235" Header="Configuration" Padding="5">
-                        <Canvas>
-                            <TextBlock Canvas.Left="56" Canvas.Top="10" FontWeight="Bold" Foreground="DarkBlue" Text="Web Service URI:" />
-                            <TextBox x:Name="Page3WebServiceUri" Canvas.Left="56" Canvas.Top="31" Width="529" Text="http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/{VIN}?format=xml" />
-                            <TextBlock Canvas.Left="56" Canvas.Top="94" FontWeight="Bold" Foreground="DarkBlue" Text="Data Node xpath:" />
-                            <TextBox x:Name="Page3DataNodeXpath" Canvas.Left="56" Canvas.Top="115" Width="521" Text="/Response/Results/DecodedVINValues/*" />
-                            <Button x:Name="Page3ResetDefault" Canvas.Left="56" Canvas.Top="156" Width="149" Margin="0" Click="Page3ResetDefault_Click" Content="Reset to Default Values" />
-                            <TextBlock Canvas.Left="71" Canvas.Top="49" FontStyle="Italic" Foreground="DarkBlue" Text="Please note that currently this application only supports XML responses" />
-                        </Canvas>
-                    </Expander>
-                    <TextBlock x:Name="Page3StatusTextBlock" Canvas.Left="176" Canvas.Top="67" FontSize="12" FontWeight="Bold" Foreground="Blue" Text="Checking, please wait..." TextWrapping="Wrap" />
-                    <Button x:Name="Page3TestWebService" Canvas.Left="176" Canvas.Top="122" Width="76" Margin="0" Click="Page3TestWebService_Click" Content="Try Again" />
-                    <TextBlock x:Name="Page3Hint" Canvas.Left="355" Canvas.Top="414" Foreground="Blue" Text="This page of the wizard will automatically advance following a successful test of the Web Service" />
-                    <Button x:Name="Page3Previous" Canvas.Left="624" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="GoToPreviousPage" Content="Previous" />
-                    <Button x:Name="Page3Cancel" Canvas.Left="705" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ShutdownApplication" Content="Cancel" />
-                    <Button x:Name="Page3Next" Canvas.Left="785" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="GoToNextPage" Content="Next" IsEnabled="False" />
-                    <Button x:Name="Page3Help" Canvas.Left="810" Canvas.Top="0" Width="50" Background="LightYellow" Click="Help_Click" Content="Help" Tag="VerifyInternetConnectivity.html" />
-                </Canvas>
-            </TabItem>
-            <TabItem x:Name="TabItemPage4" Header="Page4">
+            <TabItem x:Name="TabItemPage3" Header="Page3" Selector.Selected="Page3_Selected">
                 <Canvas>
                     <Border Height="70" Margin="0,0,668,271" Background="DarkBlue" BorderBrush="Black" BorderThickness="1" CornerRadius="0,0,120,0">
                         <Label Width="146" Height="62" Margin="12,-2,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Step 3" FontSize="34" Foreground="White" />
                     </Border>
                     <TextBlock Width="619" Height="62" Margin="174,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="28" Foreground="DarkBlue" Text="Data Download" />
-                    <DataGrid x:Name="Page4DataGrid" Canvas.Left="26" Canvas.Top="106" Width="844" Height="260" Background="White" CanUserAddRows="False" HorizontalGridLinesBrush="LightGray" IsReadOnly="True" VerticalGridLinesBrush="LightGray" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" />
-                    <TextBlock x:Name="Page4DownloadStatus" Canvas.Left="176" Canvas.Top="73" Width="215" FontWeight="Bold" Foreground="DarkBlue" Text="Status: Inactive" />
-                    <ProgressBar x:Name="Page4ProgressBar" Canvas.Left="409" Canvas.Top="76" Width="398" Height="17" IsVisibleChanged="Page4ProgressBar_IsVisibleChanged" />
-                    <Button x:Name="Page4ClipboardCopyButton" Canvas.Left="479" Canvas.Top="435" Width="144" Margin="0" Click="Page4ClipboardCopyButton_Click" Content="Copy All To Clipboard" IsEnabled="False" />
-                    <TextBlock x:Name="Page4Hint" Canvas.Left="616" Canvas.Top="414" Foreground="Blue" Text="The data must finish downloading to continue" TextWrapping="Wrap" />
-                    <Button x:Name="Page4Previous" Canvas.Left="624" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Page4Previous_Click" Content="Previous" IsEnabled="False" />
-                    <Button x:Name="Page4Cancel" Canvas.Left="705" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ShutdownApplication" Content="Cancel" />
-                    <Button x:Name="Page4Next" Canvas.Left="785" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Page4Next_Click" Content="Next" IsEnabled="False" />
-                    <Button x:Name="Page4Help" Canvas.Left="810" Canvas.Top="0" Width="50" Background="LightYellow" Click="Help_Click" Content="Help" Tag="DataDownload.html" />
-                    <Button x:Name="Page4CancelDownloadButton" Canvas.Left="812" Canvas.Top="73" Width="58" Height="22" Margin="0" Click="Page4CancelDownload_Click" Content="Cancel" />
+                    <DataGrid x:Name="Page3DataGrid" Canvas.Left="26" Canvas.Top="106" Width="844" Height="260" Background="White" CanUserAddRows="False" HorizontalGridLinesBrush="LightGray" IsReadOnly="True" VerticalGridLinesBrush="LightGray" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" />
+                    <TextBlock x:Name="Page3DownloadStatus" Canvas.Left="176" Canvas.Top="73" Width="215" FontWeight="Bold" Foreground="DarkBlue" Text="Status: Inactive" />
+                    <ProgressBar x:Name="Page3ProgressBar" Canvas.Left="409" Canvas.Top="76" Width="398" Height="17" />
+                    <Button x:Name="Page3ClipboardCopyButton" Canvas.Left="479" Canvas.Top="435" Width="144" Margin="0" Click="Page3ClipboardCopyButton_Click" Content="Copy All To Clipboard" IsEnabled="False" />
+                    <TextBlock x:Name="Page3Hint" Canvas.Left="616" Canvas.Top="414" Foreground="Blue" Text="The data must finish downloading to continue" TextWrapping="Wrap" />
+                    <Button x:Name="Page3Previous" Canvas.Left="624" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Page3Previous_Click" Content="Previous" IsEnabled="False" />
+                    <Button x:Name="Page3Cancel" Canvas.Left="705" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ShutdownApplication" Content="Cancel" />
+                    <Button x:Name="Page3Next" Canvas.Left="785" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Page3Next_Click" Content="Next" IsEnabled="False" />
+                    <Button x:Name="Page3Help" Canvas.Left="810" Canvas.Top="0" Width="50" Background="LightYellow" Click="Help_Click" Content="Help" Tag="DataDownload.html" />
+                    <Button x:Name="Page3CancelDownloadButton" Canvas.Left="812" Canvas.Top="73" Width="58" Height="22" Margin="0" Click="Page3CancelDownload_Click" Content="Cancel" />
                 </Canvas>
             </TabItem>
-            <TabItem Header="Page5">
+            <TabItem Header="Page4">
                 <Canvas>
                     <Border Height="70" Margin="0,0,668,271" Background="DarkBlue" BorderBrush="Black" BorderThickness="1" CornerRadius="0,0,120,0">
                         <Label Width="146" Height="62" Margin="12,-2,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Step 4" FontSize="34" Foreground="White" />
                     </Border>
                     <TextBlock Width="619" Height="62" Margin="174,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="28" Foreground="DarkBlue" Text="Select Columns to Save" />
-                    <Button x:Name="Page5CheckAllButton" Canvas.Left="48" Canvas.Top="88" Width="98" Click="Page5CheckAllButton_Click" Content="Uncheck All" />
-                    <ListView x:Name="Page5ListView" Canvas.Left="174" Canvas.Top="94" Width="305" Height="338" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling">
+                    <Button x:Name="Page4CheckAllButton" Canvas.Left="48" Canvas.Top="88" Width="98" Click="Page4CheckAllButton_Click" Content="Uncheck All" />
+                    <ListView x:Name="Page4ListView" Canvas.Left="174" Canvas.Top="94" Width="305" Height="338" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn />
@@ -186,32 +161,32 @@
                         <LineBreak /><Run />
                         <LineBreak /><Run Text="If you only need a few columns, you may select the Uncheck All button and check only those columns." />
                     </TextBlock>
-                    <Button x:Name="Page5Previous" Canvas.Left="624" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="GoToPreviousPage" Content="Previous" />
-                    <Button x:Name="Page5Cancel" Canvas.Left="705" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ShutdownApplication" Content="Cancel" />
-                    <Button x:Name="Page5Next" Canvas.Left="785" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="GoToNextPage" Content="Next" />
-                    <Button x:Name="Page5Help" Canvas.Left="810" Canvas.Top="0" Width="50" Background="LightYellow" Click="Help_Click" Content="Help" Tag="SelectColumnsToSave.html" />
+                    <Button x:Name="Page4Previous" Canvas.Left="624" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="GoToPreviousPage" Content="Previous" />
+                    <Button x:Name="Page4Cancel" Canvas.Left="705" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ShutdownApplication" Content="Cancel" />
+                    <Button x:Name="Page4Next" Canvas.Left="785" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="GoToNextPage" Content="Next" />
+                    <Button x:Name="Page4Help" Canvas.Left="810" Canvas.Top="0" Width="50" Background="LightYellow" Click="Help_Click" Content="Help" Tag="SelectColumnsToSave.html" />
                 </Canvas>
             </TabItem>
-            <TabItem Header="Page6">
+            <TabItem Header="Page5">
                 <Canvas>
                     <Border Height="70" Margin="0,0,668,271" Background="DarkBlue" BorderBrush="Black" BorderThickness="1" CornerRadius="0,0,120,0">
                         <Label Width="146" Height="62" Margin="12,-2,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Step 5" FontSize="34" Foreground="White" />
                     </Border>
                     <TextBlock Width="619" Height="62" Margin="174,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="28" Foreground="DarkBlue" Text="Save VIN Data" />
-                    <RadioButton x:Name="Page6CreateNewExcelFileRadioButton" Canvas.Left="118" Canvas.Top="116" Content="Save as a new Excel File" IsChecked="True" />
-                    <RadioButton x:Name="Page6CreateNewCsvFileRadioButton" Canvas.Left="118" Canvas.Top="136" Content="Save as a new CSV File" IsChecked="False" />
+                    <RadioButton x:Name="Page5CreateNewExcelFileRadioButton" Canvas.Left="118" Canvas.Top="116" Content="Save as a new Excel File" IsChecked="True" />
+                    <RadioButton x:Name="Page5CreateNewCsvFileRadioButton" Canvas.Left="118" Canvas.Top="136" Content="Save as a new CSV File" IsChecked="False" />
                     <TextBlock Canvas.Left="140" Canvas.Top="166" Text="File:" />
                     <TextBlock Canvas.Left="140" Canvas.Top="204" Foreground="Blue" Text="Caution: saving to an existing file will cause the file to be overwritten!" />
-                    <TextBox x:Name="Page6NewExcelFileTextBox" Canvas.Left="167" Canvas.Top="167" Width="439" IsReadOnly="True" />
-                    <TextBlock x:Name="Page6FileOpenHint" Canvas.Left="320" Canvas.Top="135" Foreground="Red" Text="Please ensure that the file you select is not open in any program(s)" Visibility="Hidden" />
-                    <Button x:Name="Page6Browse" Canvas.Left="611" Canvas.Top="158" Width="72" Click="Page6Browse_Click" Content="Browse..." />
-                    <Button x:Name="Page6Previous" Canvas.Left="624" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="GoToPreviousPage" Content="Previous" />
-                    <Button x:Name="Page6Cancel" Canvas.Left="705" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ShutdownApplication" Content="Cancel" />
-                    <Button x:Name="Page6Save" Canvas.Left="785" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Page6Save_Click" Content="Save" IsEnabled="False" />
-                    <Button x:Name="Page6Help" Canvas.Left="810" Canvas.Top="0" Width="50" Background="LightYellow" Click="Help_Click" Content="Help" Tag="SaveVINData.html" />
+                    <TextBox x:Name="Page5NewExcelFileTextBox" Canvas.Left="167" Canvas.Top="167" Width="439" IsReadOnly="True" />
+                    <TextBlock x:Name="Page5FileOpenHint" Canvas.Left="320" Canvas.Top="135" Foreground="Red" Text="Please ensure that the file you select is not open in any program(s)" Visibility="Hidden" />
+                    <Button x:Name="Page5Browse" Canvas.Left="611" Canvas.Top="158" Width="72" Click="Page5Browse_Click" Content="Browse..." />
+                    <Button x:Name="Page5Previous" Canvas.Left="624" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="GoToPreviousPage" Content="Previous" />
+                    <Button x:Name="Page5Cancel" Canvas.Left="705" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ShutdownApplication" Content="Cancel" />
+                    <Button x:Name="Page5Save" Canvas.Left="785" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Page5Save_Click" Content="Save" IsEnabled="False" />
+                    <Button x:Name="Page5Help" Canvas.Left="810" Canvas.Top="0" Width="50" Background="LightYellow" Click="Help_Click" Content="Help" Tag="SaveVINData.html" />
                 </Canvas>
             </TabItem>
-            <TabItem Header="Page7">
+            <TabItem Header="Page6">
                 <Canvas>
                     <TextBlock Width="619" Height="62" Margin="174,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="28" Foreground="DarkBlue" Text="Finished" />
                     <TextBlock Canvas.Left="174" Canvas.Top="100" FontWeight="Bold" Text="Your Data Has Been Saved To" />
@@ -219,7 +194,7 @@
                     <TextBlock Canvas.Left="174" Canvas.Top="296" FontWeight="Bold" Text="License" />
                     <TextBlock Canvas.Left="174" Canvas.Top="362" FontWeight="Bold" Text="Author(s)" />
                     <TextBlock Canvas.Left="183" Canvas.Top="383" Text="Kent P. McKinney" />
-                    <TextBox x:Name="Page7SavedFileTextBox" Canvas.Left="188" Canvas.Top="126" Width="618" Height="44" Background="Transparent" BorderThickness="0" Text="" TextWrapping="Wrap" />
+                    <TextBox x:Name="Page6SavedFileTextBox" Canvas.Left="188" Canvas.Top="126" Width="618" Height="44" Background="Transparent" BorderThickness="0" Text="" TextWrapping="Wrap" />
                     <TextBlock Canvas.Left="188" Canvas.Top="213">
                         <TextBlock Text="This application uses " />
                         <Hyperlink Click="Hyperlink_Click" NavigateUri="https://github.com/ExcelDataReader/ExcelDataReader"><Run Text="Excel Data Reader for .NET"/></Hyperlink>
@@ -239,7 +214,7 @@
                         <TextBlock Text="This is open source software distributed under the terms of the " />
                         <Hyperlink Click="Hyperlink_Click" NavigateUri="https://opensource.org/licenses/MIT">MIT License</Hyperlink>
                     </TextBlock>
-                    <Button x:Name="Page7Close" Canvas.Left="785" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ShutdownApplication" Content="Close" />
+                    <Button x:Name="Page6Close" Canvas.Left="785" Canvas.Top="430" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ShutdownApplication" Content="Close" />
                 </Canvas>
             </TabItem>
         </TabControl>

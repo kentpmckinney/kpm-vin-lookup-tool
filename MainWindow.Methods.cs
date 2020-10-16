@@ -158,9 +158,9 @@ namespace VehicleInformationLookupTool
         }
 
 
-        private string PromptSaveExcelFileName()
+        private static string PromptSaveExcelFileName(bool IsExcel)
         {
-            var dialog = Page6CreateNewExcelFileRadioButton.IsChecked == true
+            var dialog = IsExcel
                 ? new SaveFileDialog()
                 {
                     DefaultExt = ".xlsx",
