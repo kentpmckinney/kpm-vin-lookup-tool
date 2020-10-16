@@ -1,7 +1,10 @@
 
 # Vehicle Information Lookup Tool
 
-Looks up details for Vehicle Identification Numbers (VINs) using the National Highway Traffic Safety Administration's web API.
+
+This tool helps look up information about vehicles from the National Highway Traffic Safety Administration's online database with one or more VIN numbers that you provide, and is primarily intended for batch processing.
+
+This software is free (including commercial use) and open source and is provided under the terms of the MIT License.
 
 Features:
  * Designed for batch processing
@@ -11,15 +14,21 @@ Features:
  * Saves results to Excel, CSV, or copy to clipboard
  * Re-orders result rows to match the order of the source data
  * Allows choosing which columns to include in the output
- * Optionally auto-correct VIN numbers
- * Optionally discard invalid VIN numbers
-
-To use this application, download the current release from GitHub.
+ * Optionally auto-corrects VIN numbers
+ * Optionally discards invalid VIN numbers
 
 
   <br/>
 
 ### How to Use
+
+To get started:
+ 1. Download the [current release](https://github.com/kentpmckinney/kpm-vin-lookup-tool/releases) from GitHub
+ 1. Run the installer
+ 1. After the install is complete, launch the application from the Start menu or icon on the Desktop
+ 1. Follow the prompts and instructions
+ 1. Most pages in the application have a Help button which provides further information for that page
+
 
 
 <br/>
