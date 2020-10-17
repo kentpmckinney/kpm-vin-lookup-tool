@@ -132,9 +132,14 @@ namespace VehicleInformationLookupTool
                 if (key is null)
                 {
                     key = software?.CreateSubKey("VehicleInformationLookupTool");
-                    key?.SetValue(valueName, valueString);
-                    key?.Close();
                 }
+
+                if (string.IsNullOrWhiteSpace(key?.GetValue(valueName) as string))
+                {
+                    key?.SetValue(valueName, valueString);
+                }
+
+                key?.Close();
             }
             catch (Exception)
             {
@@ -148,7 +153,7 @@ namespace VehicleInformationLookupTool
             var dialog = new OpenFileDialog()
             {
                 DefaultExt = ".xlsx",
-                Filter = "Excel files (*.xlsx;*.xls;*.csv)|*.xlsx;*.xls;*.csv|All files (*.*)|*.*"
+                Filter = "Excel/CSV files (*.xlsx;*.xls;*.csv)|*.xlsx;*.xls;*.csv|All files (*.*)|*.*"
             };
 
             /* Display the dialog and return the text entered by the user */
@@ -246,9 +251,8 @@ namespace VehicleInformationLookupTool
             datagrid.ThrowIfNullOrEmpty();
 
             var dataValues = new List<string>();
-            var row = datagrid.Items[rowNumber] as DataRowView;
 
-            if (row == null)
+            if (!(datagrid.Items[rowNumber] is DataRowView row))
             {
                 return new List<string>();
             }
