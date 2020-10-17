@@ -78,11 +78,9 @@ WPF</code>
 
   ### Notes
 
-  1. Download a copy of the source code from: https://github.com/kentpmckinney/kpm-vin-lookup-tool or clone using the repository link: https://github.com/kentpmckinney/kpm-vin-lookup-tool.git
-1. Open Visual Studio 2019
-1. Navigate to the folder location of the source files
-1. Open the solution file
-1. Press F5 to build and run
+  To gain the ability to move items around in the XAML GUI interface, look for this line:
+	<code><Setter Property="Visibility" Value="Collapsed"/></code>
+and set <code>Value="Visible"</code>
 
   ### Deployment
 
