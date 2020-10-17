@@ -33,6 +33,8 @@ To get started:
 
 ### Previewing this Project
 
+![Screenshot](http://kentpmckinney.github.io/kpm-vin-lookup-tool/Resources/vinlookup.gif)
+
 <br/>
 
 ### Technologies Used
