@@ -33,8 +33,6 @@ To get started:
 
 ### Previewing this Project
 
-A [live demo](https://kentpmckinney.github.io/kpm-vin-lookup-tool) of this application is available
-
 ![Screenshot](http://kentpmckinney.github.io/kpm-vin-lookup-tool/Resources/vinlookup.gif)
 
 <br/>
