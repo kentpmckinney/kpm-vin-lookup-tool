@@ -279,7 +279,8 @@ namespace VehicleInformationLookupTool
         private void Page3_Selected(object sender, RoutedEventArgs e)
         {
             /* Runs only when the page is visible to the user and they will be able to see UI changes on the page */
-            /* Run only once when ItemsSource is still null */
+
+            /* Run only when ItemsSource is null */
             if (Page3DataGrid.ItemsSource is null)
             {
                 DownloadVinData();
@@ -293,6 +294,7 @@ namespace VehicleInformationLookupTool
             Page3Next.IsEnabled = false;
             Page3Previous.IsEnabled = false;
             Page3ClipboardCopyButton.IsEnabled = false;
+            Page3CancelDownloadButton.IsEnabled = true;
 
             var uri = "http://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/{VIN}?format=xml";
             var xpath = "/Response/Results/DecodedVINValues/*";

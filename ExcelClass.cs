@@ -216,6 +216,24 @@ namespace VehicleInformationLookupTool
                     var lastColumn = numColumns - 1;
                     const string delimiter = ",";
 
+                    /* Add the header row */
+                    var header = new StringBuilder();
+                    for (var c = 0; c < data.Columns.Count; c++)
+                    {
+                        var columnName = data.Columns[c].ColumnName;
+
+                        columnName = columnName.Replace(',', ' ');
+                        header.Append(columnName);
+                        if (c != lastColumn)
+                        {
+                            header.Append(delimiter);
+                        }
+
+                    }
+                    writer.WriteLine(header);
+                    writer.Flush();
+
+                    /* Add data rows */
                     for (var r = 0; r < data.Rows.Count; r++)
                     {
                         var line = new StringBuilder();

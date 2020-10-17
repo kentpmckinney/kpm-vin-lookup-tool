@@ -105,9 +105,13 @@ namespace VehicleInformationLookupTool
             {
                 if (vinNode != null && !string.IsNullOrWhiteSpace(suggestedVin))
                 {
-                    originalVin = vin;
-                    vinNode[0].InnerText = suggestedVin;
-                    vinWasAutoCorrected = true;
+                    /* Limit auto-correcting the VIN to errors indicating a problem with a single digit */
+                    if (error.StartsWith("2") || error.StartsWith("3") || error.StartsWith("4"))
+                    {
+                        originalVin = vin;
+                        vinNode[0].InnerText = suggestedVin;
+                        vinWasAutoCorrected = true;
+                    }
                 }
             }
 
