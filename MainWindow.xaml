@@ -58,7 +58,7 @@
             <TabItem Header="eulaPage">
                 <Canvas>
                     <TextBlock Canvas.Left="120" Canvas.Top="43" FontSize="24" FontWeight="Bold" Foreground="DarkBlue" Text="End User License Agreement" TextWrapping="Wrap" />
-                    <TextBlock Canvas.Left="120" Canvas.Top="97" Width="642" Height="252" TextWrapping="Wrap"><Run Text="Copyright © 2016  Kent P. McKinney" />
+                    <TextBlock Canvas.Left="120" Canvas.Top="97" Width="642" Height="252" TextWrapping="Wrap"><Run Text="Copyright © 2016, 2020  Kent P. McKinney" />
                         <LineBreak />
                         <LineBreak /><Run Text="Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:" />
                         <LineBreak />
