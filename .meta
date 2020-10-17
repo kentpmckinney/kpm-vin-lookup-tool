@@ -23,9 +23,7 @@ To get started:
  1. After the install is complete, launch the application from the Start menu or the icon on the Desktop
  1. Most pages in the application have a Help button which provides further information for that page
 `
-Notes: `To gain the ability to move items around in the XAML GUI interface, look for this line:
-	<code><Setter Property="Visibility" Value="Collapsed"/></code>
-and set <code>Value="Visible"</code>`
+Notes: `To gain the ability to move items around in the XAML GUI interface, look for this line <code><Setter Property="Visibility" Value="Collapsed"/></code> and set <code>Value="Visible"</code>`
 Demolink: ``
 Screenshots: `http://kentpmckinney.github.io/kpm-vin-lookup-tool/Resources/vinlookup.gif`
 Acknowledgments: `[Excel Data Reader](https://github.com/ExcelDataReader/ExcelDataReader), [EPPlus](https://github.com/JanKallman/EPPlus)`
