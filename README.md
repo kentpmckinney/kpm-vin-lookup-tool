@@ -2,9 +2,9 @@
 # Vehicle Information Lookup Tool
 
 
-This tool helps look up information about vehicles from the National Highway Traffic Safety Administration's online database with one or more VIN numbers that you provide, and is primarily intended for batch processing.
+This tool helps look up information about vehicles from the National Highway Traffic Safety Administration's online database with one or more provided VIN numbers, and is primarily intended for batch processing.
 
-This software is free (including commercial use) and open source and is provided under the terms of the MIT License.
+This software is free (including commercial use) and open source and is provided under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
 Features:
  * Designed for batch processing
@@ -25,8 +25,7 @@ Features:
 To get started:
  1. Download the [current release](https://github.com/kentpmckinney/kpm-vin-lookup-tool/releases) from GitHub
  1. Run the installer
- 1. After the install is complete, launch the application from the Start menu or icon on the Desktop
- 1. Follow the prompts and instructions
+ 1. After the install is complete, launch the application from the Start menu or the icon on the Desktop
  1. Most pages in the application have a Help button which provides further information for that page
 
 
@@ -59,11 +58,10 @@ WPF</code>
 
   The following software must be installed and properly configured on the target machine. 
 
-   * An updated web browser (Internet Explorer may not be compatible)
- * Git (recommended)
+   * Git (recommended)
  * .NET 7.2 or Higher
  * Visual Studio 2019
- Windows Operating System
+ * Windows Operating System
   <br/>
 
   ### Setting up a Development Environment
@@ -71,9 +69,10 @@ WPF</code>
   The following steps are meant to be a quick way to get the project up and running.
 
   1. Download a copy of the source code from: https://github.com/kentpmckinney/kpm-vin-lookup-tool or clone using the repository link: https://github.com/kentpmckinney/kpm-vin-lookup-tool.git
+1. Open Visual Studio 2019
 1. Navigate to the folder location of the source files
-1. Run the command <code>dotnet build</code>
-1. Run the command <code>dotnet run</code>
+1. Open the solution file
+1. Press F5 to build and run
   <br/>
 
   ### Deployment
