@@ -37,10 +37,6 @@
 		<param name="Local" value="SaveVINData.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Verify Internet Connectivity">
-		<param name="Local" value="VerifyInternetConnectivity.html">
-		</OBJECT>
-	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Acknowledgements">
 		<param name="Local" value="Acknowledgements.html">
 		</OBJECT>

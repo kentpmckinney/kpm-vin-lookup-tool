@@ -1,13 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
 <Title>Step 2: Confirm VIN Number Selection</Title>
 </HEAD>
 <BODY>
 <h2>Step 2: Confirm VIN Number Selection</h2>
 <p>This step asks you to confirm that the column highlighted in yellow contains the VIN numbers that you intend to look up. Please ensure that the column does contain VIN numbers, and that there is one number per row. If so, simply check the box labelled "Yes, the highlighted column above contains valid VIN numbers" and you will be able to proceed to the next step. The download process will begin immediately after you click Next.</p>
-<p>The option "Auto-correct VIN numbers" overwrited the VIN column with the value of the SuggestedVIN column for rows with ErrorCodes 2, 3, and 4 (VIN corrected errors) per the NHTSA web API. Doing so places an exclamation point in digits of the VIN that are uncertain in the case of those three error codes. Note that there are other ErrorCode values that may need manual sanitizing, such as 5 (VIN has errors in a few positions) and 6 (Incomplete VIN).</p>
+<p>The option "Auto-correct VIN numbers" overwrites the VIN column with the value of the SuggestedVIN column for rows with ErrorCodes 2, 3, and 4 (VIN corrected errors) per the NHTSA web API. Doing so places an exclamation point in digits of the VIN that are uncertain in the case of those three error codes. Note that there are other ErrorCode values that may need manual sanitizing, such as 5 (VIN has errors in a few positions) and 6 (Incomplete VIN). When this option is selected, the original VIN number will be recorded in the last column of the row.</p>
 <p>The option "Discard Invalid VIN rows" drops rows that receive a message of "Invalid URL" or ErrorCode 11 (Incorrect Model Year) from the NHTSA web API.</p>
 </BODY>
 </HTML>
