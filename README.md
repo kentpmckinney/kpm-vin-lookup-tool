@@ -78,7 +78,7 @@ WPF</code>
 
   ### Notes
 
-  To gain the ability to move items around in the XAML GUI interface, look for the line <pre><Setter Property="Visibility" Value="Collapsed"/></pre> and set <pre>Value="Visible"</pre>
+  To gain the ability to move items around in the XAML GUI interface, look for the line <code>Setter Property="Visibility" Value="Collapsed"</code> and set <code>Value="Visible"</code>
 
   ### Deployment
 
