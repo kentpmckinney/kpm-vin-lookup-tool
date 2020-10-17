@@ -432,16 +432,17 @@ namespace VehicleInformationLookupTool
             {
                 return;
             }
+
             for (var i = 0; i < columnNames.Count; i++)
             {
-                clipboardText.Append(columnNames[i]);
+                clipboardText.Append(columnNames[i]); //var lastColumn = columnNames.Count
                 if (i != columnNames.Count)
                 {
                     clipboardText.Append(delimiter);
                 }
             }
             clipboardText.Append(newline);
-            
+
             /* Add data rows to clipboardText */
             var numRows = Page3DataGrid.Items.Count;
             var numColumns = Page3DataGrid.Columns.Count;
@@ -467,7 +468,7 @@ namespace VehicleInformationLookupTool
             }
             
             /* Copy to the clipboard */
-            Clipboard.SetText(clipboardText.ToString(), TextDataFormat.CommaSeparatedValue);
+            Clipboard.SetText(clipboardText.ToString(), TextDataFormat.Text);
         }
 
 
