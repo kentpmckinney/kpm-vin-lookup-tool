@@ -29,7 +29,6 @@ To get started:
  1. Most pages in the application have a Help button which provides further information for that page
 
 
-
 <br/>
 
 ### Previewing this Project
@@ -77,7 +76,7 @@ WPF</code>
 
   ### Deployment
 
-  TODO
+  In Visual Studio, under Project > Properties, set the build configuration to Release and perform a build. Program files will appear in the release folder and can be used as-is or bundled in an installation package.
 
 </details>
 
@@ -91,7 +90,7 @@ WPF</code>
 
 ### Acknowledgments
 
-<sub><!--acknowledgements--></sub>
+<sub>[Excel Data Reader](https://github.com/ExcelDataReader/ExcelDataReader), [EPPlus](https://github.com/JanKallman/EPPlus)</sub>
 <br/>
 <br/>
 
