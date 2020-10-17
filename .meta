@@ -1,9 +1,9 @@
 Categories: `Desktop;C#;WPF`
 Technologies: `C#;WPF`
 Summary: `
-This tool helps look up information about vehicles from the National Highway Traffic Safety Administration's online database with one or more VIN numbers that you provide, and is primarily intended for batch processing.
+This tool helps look up information about vehicles from the National Highway Traffic Safety Administration's online database with one or more provided VIN numbers, and is primarily intended for batch processing.
 
-This software is free (including commercial use) and open source and is provided under the terms of the MIT License.
+This software is free (including commercial use) and open source and is provided under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
 Features:
  * Designed for batch processing
@@ -20,8 +20,7 @@ Instructions: `
 To get started:
  1. Download the [current release](https://github.com/kentpmckinney/kpm-vin-lookup-tool/releases) from GitHub
  1. Run the installer
- 1. After the install is complete, launch the application from the Start menu or icon on the Desktop
- 1. Follow the prompts and instructions
+ 1. After the install is complete, launch the application from the Start menu or the icon on the Desktop
  1. Most pages in the application have a Help button which provides further information for that page
 
 `
