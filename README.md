@@ -58,10 +58,10 @@ WPF</code>
 
   The following software must be installed and properly configured on the target machine. 
 
-   * Git (recommended)
- * .NET 7.2 or Higher
- * Visual Studio 2019
- * Windows Operating System
+  * Git (recommended)
+* .NET 7.2 or Higher
+* Visual Studio 2019
+* Windows Operating System
   <br/>
 
   ### Setting up a Development Environment
