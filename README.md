@@ -7,15 +7,15 @@ This tool helps look up information about vehicles from the National Highway Tra
 This software is free (including commercial use) and open source and is provided under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
 Features:
- * Designed for batch processing
- * Uses multiple concurrent connections
- * Tolerates network interruptions
- * Reads VIN numbers from Excel, CSV, or paste from clipboard
- * Saves results to Excel, CSV, or copy to clipboard
- * Re-orders result rows to match the order of the source data
- * Allows choosing which columns to include in the output
- * Optionally auto-corrects VIN numbers
- * Optionally discards invalid VIN numbers
+* Designed for batch processing
+* Uses multiple concurrent connections
+* Tolerates network interruptions
+* Reads VIN numbers from Excel, CSV, or paste from clipboard
+* Saves results to Excel, CSV, or copy to clipboard
+* Re-orders result rows to match the order of the source data
+* Allows choosing which columns to include in the output
+* Optionally auto-corrects VIN numbers
+* Optionally discards invalid VIN numbers
 
 
   <br/>
@@ -23,10 +23,10 @@ Features:
 ### How to Use
 
 To get started:
- 1. Download the [current release](https://github.com/kentpmckinney/kpm-vin-lookup-tool/releases) from GitHub
- 1. Run the installer
- 1. After the install is complete, launch the application from the Start menu or the icon on the Desktop
- 1. Most pages in the application have a Help button which provides further information for that page
+1. Download the [current release](https://github.com/kentpmckinney/kpm-vin-lookup-tool/releases) from GitHub
+1. Run the installer
+1. After the install is complete, launch the application from the Start menu or the icon on the Desktop
+1. Most pages in the application have a Help button which provides further information for that page
 
 
 <br/>
