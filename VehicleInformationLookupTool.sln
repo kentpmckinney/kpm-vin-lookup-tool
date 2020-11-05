@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VehicleInformationLookupTool", "VehicleInformationLookupTool.csproj", "{E2F63B50-4F39-4A14-B9B8-DDD163A18324}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup-VIN-Lookup-1.2", "Setup\Setup-VIN-Lookup-1.2\Setup-VIN-Lookup-1.2.vdproj", "{54632426-2C5A-4D84-9046-58711E98773C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{E2F63B50-4F39-4A14-B9B8-DDD163A18324}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2F63B50-4F39-4A14-B9B8-DDD163A18324}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2F63B50-4F39-4A14-B9B8-DDD163A18324}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54632426-2C5A-4D84-9046-58711E98773C}.Debug|Any CPU.ActiveCfg = Debug
+		{54632426-2C5A-4D84-9046-58711E98773C}.Debug|Any CPU.Build.0 = Debug
+		{54632426-2C5A-4D84-9046-58711E98773C}.Release|Any CPU.ActiveCfg = Release
+		{54632426-2C5A-4D84-9046-58711E98773C}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -27,16 +27,16 @@ namespace VehicleInformationLookupTool
         bool IsApiAccessible(string uri, CancellationToken token);
 
         /// <summary>
-        /// Gets a list of column headers for vin data
+        /// Gets a list of column headers for VIN data
         /// </summary>
         /// <param name="uri"> The fully-qualified location of the web service </param>
         /// <param name="xpath"> Specifies what nodes to retrieve from the XML response </param>
         /// <param name="token"> A cancellation token that this method should respect </param>
-        /// <returns> A string list with column header text for the items of vin data returned </returns>
+        /// <returns> A string list with column header text for the items of VIN data returned </returns>
         List<string> GetVinColumnHeaders(string uri, string xpath, CancellationToken token);
 
         /// <summary>
-        /// Gets a single row of data for the specified vin
+        /// Gets a single row of data for the specified VIN
         /// </summary>
         /// <param name="uri"> The fully-qualified location of the web service </param>
         /// <param name="vin"> The vehicle's VIN number </param>
@@ -44,7 +44,7 @@ namespace VehicleInformationLookupTool
         /// <param name="autoCorrect"> Specifies whether to auto-correct a VIN number </param>
         /// <param name="discardInvalid"> Specifies whether to discard data rows with invalid VIN numbers </param>
         /// <param name="token"> A cancellation token that this method should respect </param>
-        /// <returns> A string list with the column values for the specified vin number </returns>
+        /// <returns> A string list with the column values for the specified VIN number </returns>
         List<string> GetVinDataRow(string uri, string vin, string xpath, bool autoCorrect, bool discardInvalid, CancellationToken token);
     }
 }
