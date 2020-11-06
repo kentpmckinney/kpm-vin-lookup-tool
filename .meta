@@ -1,6 +1,7 @@
 Categories: `Desktop;C#;WPF;Featured`
 Technologies: `C#;WPF`
-Summary: `
+Summary: `A batch-processing tool to look up details for Vehicle Identification Numbers`
+Description: `
 This tool helps look up information about vehicles from the National Highway Traffic Safety Administration's online database with one or more provided VIN numbers, and is primarily intended for batch processing.
 
 This software is free (including commercial use) and open source and is provided under the terms of the [MIT License](https://opensource.org/licenses/MIT).
