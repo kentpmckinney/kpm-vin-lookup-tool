@@ -1,23 +1,7 @@
 
 # Vehicle Information Lookup Tool
 
-
-This tool helps look up information about vehicles from the National Highway Traffic Safety Administration's online database with one or more provided VIN numbers, and is primarily intended for batch processing.
-
-This software is free (including commercial use) and open source and is provided under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-Features:
-
-* Designed for batch processing
-* Uses multiple concurrent connections
-* Tolerates network interruptions
-* Reads VIN numbers from Excel, CSV, or paste from clipboard
-* Saves results to Excel, CSV, or copy to clipboard
-* Re-orders result rows to match the order of the source data
-* Allows choosing which columns to include in the output
-* Optionally auto-corrects VIN numbers
-* Optionally discards invalid VIN numbers
-
+A batch-processing tool to look up details for Vehicle Identification Numbers
 
   <br/>
 
