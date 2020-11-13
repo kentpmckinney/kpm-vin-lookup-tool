@@ -28,6 +28,9 @@ To get started:
 `
 Notes: `To gain the ability to move items around in the XAML GUI interface, look for the line <code>Setter Property="Visibility" Value="Collapsed"</code> and set <code>Value="Visible"</code>`
 Demolink: ``
+Demo: `Yes`
+Source: `Yes`
 Screenshots: `http://kentpmckinney.github.io/kpm-vin-lookup-tool/Resources/vinlookup.gif`
 Acknowledgments: `[Excel Data Reader](https://github.com/ExcelDataReader/ExcelDataReader), [EPPlus](https://github.com/JanKallman/EPPlus)`
 Portfolio: `Yes`
+External: `No`
