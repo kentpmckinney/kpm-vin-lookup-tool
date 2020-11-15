@@ -31,61 +31,61 @@ WPF</code>
 
 ### Working with the Source Code
 
-<!-- <details markdown="1">
-  <summary markdown="1">Instructions</summary> -->
+<details markdown="1">
+<summary>Instructions</summary>
 
-  <br markdown="1"/>
-  The following are suggestions to help set up a development environment for this project. The actual steps needed may differ slightly depending on the operating system and other factors.
+<br/>
+The following are suggestions to help set up a development environment for this project. The actual steps needed may differ slightly depending on the operating system and other factors.
 
-  <br markdown="1"/>
-  <br markdown="1"/>
+<br/>
+<br/>
 
-  ### Prerequisites
+### Prerequisites
 
-  The following software must be installed and properly configured on the target machine. 
+The following software must be installed and properly configured on the target machine. 
 
-  
+
 
 * Git (recommended)
 * .NET 7.2 or Higher
 * Visual Studio 2019
 * Windows Operating System
-  <br markdown="1"/>
+<br/>
 
-  ### Setting up a Development Environment
+### Setting up a Development Environment
 
-  The following steps are meant to be a quick way to get the project up and running.
+The following steps are meant to be a quick way to get the project up and running.
 
-  
+
 1. Download a copy of the source code from: https://github.com/kentpmckinney/kpm-vin-lookup-tool or clone using the repository link: https://github.com/kentpmckinney/kpm-vin-lookup-tool.git
 1. Open Visual Studio 2019
 1. Navigate to the folder location of the source files
 1. Open the solution file
 1. Press F5 to build and run
-  <br markdown="1"/>
+<br/>
 
-  ### Notes
+### Notes
 
-  To gain the ability to move items around in the XAML GUI interface, look for the line <code>Setter Property="Visibility" Value="Collapsed"</code> and set <code>Value="Visible"</code>
+To gain the ability to move items around in the XAML GUI interface, look for the line <code>Setter Property="Visibility" Value="Collapsed"</code> and set <code>Value="Visible"</code>
 
-  ### Deployment
+### Deployment
 
-  In Visual Studio, under Project > Properties, set the build configuration to Release and perform a build. Program files will appear in the release folder and can be used as-is or bundled in an installation package.
+In Visual Studio, under Project > Properties, set the build configuration to Release and perform a build. Program files will appear in the release folder and can be used as-is or bundled in an installation package.
 
 <!-- </details> -->
 
-<br markdown="1"/>
+<br/>
 
 ### Authors
 
 [kentpmckinney](https://github.com/kentpmckinney)
-<br markdown="1"/>
-<br markdown="1"/>
+<br/>
+<br/>
 
 ### Acknowledgments
 
 <sub markdown="1">[Excel Data Reader](https://github.com/ExcelDataReader/ExcelDataReader), [EPPlus](https://github.com/JanKallman/EPPlus)</sub>
-<br markdown="1"/>
-<br markdown="1"/>
+<br/>
+<br/>
 
 ###### <sub markdown="1">Copyright&copy; 2020 [kentpmckinney](https://github.com/kentpmckinney). All rights reserved.</sub>
