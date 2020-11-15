@@ -3,7 +3,7 @@
 
 A batch-processing tool to look up details for Vehicle Identification Numbers
 
-  <br/>
+<br/>
 
 ### How to Use
 
@@ -24,10 +24,10 @@ To get started:
 
 ### Technologies Used
 
-  <code>C#
+<code>C#
 WPF</code>
-  <br/>
-  <br/>
+<br/>
+<br/>
 
 ### Working with the Source Code
 
@@ -72,7 +72,7 @@ To gain the ability to move items around in the XAML GUI interface, look for the
 
 In Visual Studio, under Project > Properties, set the build configuration to Release and perform a build. Program files will appear in the release folder and can be used as-is or bundled in an installation package.
 
-<!-- </details> -->
+</details>
 
 <br/>
 
