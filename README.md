@@ -32,13 +32,13 @@ WPF</code>
 ### Working with the Source Code
 
 <details markdown="1">
-  <summary>Instructions</summary>
+  <summary markdown="1">Instructions</summary>
 
-  <br/>
+  <br markdown="1"/>
   The following are suggestions to help set up a development environment for this project. The actual steps needed may differ slightly depending on the operating system and other factors.
 
-  <br/>
-  <br/>
+  <br markdown="1"/>
+  <br markdown="1"/>
 
   ### Prerequisites
 
@@ -50,7 +50,7 @@ WPF</code>
 * .NET 7.2 or Higher
 * Visual Studio 2019
 * Windows Operating System
-  <br/>
+  <br markdown="1"/>
 
   ### Setting up a Development Environment
 
@@ -62,7 +62,7 @@ WPF</code>
 1. Navigate to the folder location of the source files
 1. Open the solution file
 1. Press F5 to build and run
-  <br/>
+  <br markdown="1"/>
 
   ### Notes
 
@@ -74,18 +74,18 @@ WPF</code>
 
 </details>
 
-<br/>
+<br markdown="1"/>
 
 ### Authors
 
 [kentpmckinney](https://github.com/kentpmckinney)
-<br/>
-<br/>
+<br markdown="1"/>
+<br markdown="1"/>
 
 ### Acknowledgments
 
 <sub markdown="1">[Excel Data Reader](https://github.com/ExcelDataReader/ExcelDataReader), [EPPlus](https://github.com/JanKallman/EPPlus)</sub>
-<br/>
-<br/>
+<br markdown="1"/>
+<br markdown="1"/>
 
 ###### <sub markdown="1">Copyright&copy; 2020 [kentpmckinney](https://github.com/kentpmckinney). All rights reserved.</sub>
