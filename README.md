@@ -31,8 +31,8 @@ WPF</code>
 
 ### Working with the Source Code
 
-<details markdown="1">
-  <summary markdown="1">Instructions</summary>
+<!-- <details markdown="1">
+  <summary markdown="1">Instructions</summary> -->
 
   <br markdown="1"/>
   The following are suggestions to help set up a development environment for this project. The actual steps needed may differ slightly depending on the operating system and other factors.
@@ -72,7 +72,7 @@ WPF</code>
 
   In Visual Studio, under Project > Properties, set the build configuration to Release and perform a build. Program files will appear in the release folder and can be used as-is or bundled in an installation package.
 
-</details>
+<!-- </details> -->
 
 <br markdown="1"/>
 
