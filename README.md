@@ -36,8 +36,6 @@ WPF</code>
 
 <br/>
 The following are suggestions to help set up a development environment for this project. The actual steps needed may differ slightly depending on the operating system and other factors.
-
-<br/>
 <br/>
 
 ### Prerequisites
