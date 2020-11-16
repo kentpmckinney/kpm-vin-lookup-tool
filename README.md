@@ -54,14 +54,15 @@ The following software must be installed and properly configured on the target m
 
 The following steps are meant to be a quick way to get the project up and running.
 
-1. Download a copy of the source code from: https://github.com/kentpmckinney/kpm-vin-lookup-tool or clone using the repository link: https://github.com/kentpmckinney/kpm-vin-lookup-tool.git
+1. Download a copy of the source code from: [https://github.com/kentpmckinney/kpm-vin-lookup-tool](https://github.com/kentpmckinney/kpm-vin-lookup-tool) or clone using the repository link: <code>https://github.com/kentpmckinney/kpm-vin-lookup-tool.git</code>
 1. Open Visual Studio 2019
 1. Navigate to the folder location of the source files
 1. Open the solution file
 1. Press F5 to build and run
 <br/>
 
-
+### Notes<br/>
+To gain the ability to move items around in the XAML GUI interface, look for the line <code>Setter Property="Visibility" Value="Collapsed"</code> and set <code>Value="Visible"</code>
 
 ### Deployment<br>
 In Visual Studio, under Project > Properties, set the build configuration to Release and perform a build. Program files will appear in the release folder and can be used as-is or bundled in an installation package.
