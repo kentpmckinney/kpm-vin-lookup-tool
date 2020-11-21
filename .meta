@@ -1,6 +1,7 @@
-Categories: `Desktop;C#;WPF`
+Categories: `Desktop;C#;WPF;Featured`
 Technologies: `C#;WPF`
-Summary: `
+Summary: `A batch-processing tool to look up details for Vehicle Identification Numbers`
+Description: `
 This tool helps look up information about vehicles from the National Highway Traffic Safety Administration's online database with one or more provided VIN numbers, and is primarily intended for batch processing.
 
 This software is free (including commercial use) and open source and is provided under the terms of the [MIT License](https://opensource.org/licenses/MIT).
@@ -27,6 +28,9 @@ To get started:
 `
 Notes: `To gain the ability to move items around in the XAML GUI interface, look for the line <code>Setter Property="Visibility" Value="Collapsed"</code> and set <code>Value="Visible"</code>`
 Demolink: ``
+Demo: `No`
+Source: `Yes`
 Screenshots: `http://kentpmckinney.github.io/kpm-vin-lookup-tool/Resources/vinlookup.gif`
 Acknowledgments: `[Excel Data Reader](https://github.com/ExcelDataReader/ExcelDataReader), [EPPlus](https://github.com/JanKallman/EPPlus)`
 Portfolio: `Yes`
+External: `No`
