@@ -1,7 +1,7 @@
 using System.Resources;
 //-----------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="N/A">
-//     Copyright (c) 2016 Kent P. McKinney
+// <copyright file="AssemblyInfo.cs">
+//     Copyright (c) 2016, 2020 Kent P. McKinney
 //     Released under the terms of the MIT License
 // </copyright>
 //-----------------------------------------------------------------------

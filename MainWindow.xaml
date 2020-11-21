@@ -68,7 +68,7 @@
                     </TextBlock>
                     <CheckBox x:Name="EulaCheckBox" Canvas.Left="121" Canvas.Top="360" Click="EulaPageCheckBox_Click" Foreground="DarkBlue">
                         <TextBlock>
-                            <TextBlock Text="I agree to these terms, and to the National Highway Traffic Safety Administration's _web site " />
+                            <TextBlock Text="I agree to these terms, and to the National Highway Traffic Safety Administration's web site " />
                             <Hyperlink Click="Hyperlink_Click" NavigateUri="https://www.nhtsa.gov/about-nhtsa/terms-use"><Run Text="Terms of Use" />
                             </Hyperlink>
                             <LineBreak />

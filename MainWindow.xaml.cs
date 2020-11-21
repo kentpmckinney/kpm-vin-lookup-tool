@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="MainWindow.xaml.cs" company="N/A">
+// <copyright file="MainWindow.xaml.cs">
 //     Copyright (c) 2016, 2020 Kent P. McKinney
 //     Released under the terms of the MIT License
 // </copyright>

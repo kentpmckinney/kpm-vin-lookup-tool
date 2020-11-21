@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebClass.cs" company="N/A">
+// <copyright file="WebClass.cs">
 //     Copyright (c) 2016, 2020 Kent P. McKinney
 //     Released under the terms of the MIT License
 // </copyright>
@@ -34,6 +34,7 @@ namespace VehicleInformationLookupTool
             try
             {
                 _ = _client.GetAsync(@"http://www.google.com").Result;
+                return true;
             }
             catch
             {
