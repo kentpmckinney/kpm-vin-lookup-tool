@@ -83,4 +83,4 @@ In Visual Studio, under Project > Properties, set the build configuration to Rel
 <br/>
 <br/>
 
-###### <sub markdown="1">Copyright&copy; 2020 [kentpmckinney](https://github.com/kentpmckinney). All rights reserved.</sub>
+###### <sub markdown="1">Copyright&copy; 2021 [kentpmckinney](https://github.com/kentpmckinney). All rights reserved.</sub>
